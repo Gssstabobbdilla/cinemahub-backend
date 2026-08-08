@@ -11,4 +11,6 @@ public interface ReservationSeatRepository extends JpaRepository<ReservationSeat
     List<ReservationSeat> findByReservationId(Long reservationId);
 
     List<ReservationSeat> findByShowtimeId(Long showtimeId);
+
+    long deleteByReservationId(Long reservationId);
 }

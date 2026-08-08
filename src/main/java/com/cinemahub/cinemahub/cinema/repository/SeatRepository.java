@@ -9,4 +9,6 @@ import java.util.List;
 public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     List<Seat> findByRoomId(Long roomId);
+
+    boolean existsByRoomIdAndRowLabelAndSeatNumber(Long roomId, String rowLabel, Integer seatNumber);
 }

@@ -9,4 +9,6 @@ import java.util.List;
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
     List<Room> findByCinemaId(Long cinemaId);
+    boolean existsByCinemaIdAndName(Long cinemaId, String name);
+
 }
