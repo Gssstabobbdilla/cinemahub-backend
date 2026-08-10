@@ -55,6 +55,14 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
+
+        <!-- WEB -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!-- Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
