@@ -1,4 +1,12 @@
 package com.cinemahub.cinemahub.notification.dto;
 
-public record CreateNotificationRequest(Long userId, String title, String message) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+public record CreateNotificationRequest(
+        @NotNull Long userId,
+        @NotBlank @Size(max = 150) String title,
+        String message
+) {
 }

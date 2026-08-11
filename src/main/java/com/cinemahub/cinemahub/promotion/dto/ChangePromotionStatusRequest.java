@@ -2,5 +2,7 @@ package com.cinemahub.cinemahub.promotion.dto;
 
 import com.cinemahub.cinemahub.promotion.entity.PromotionStatus;
 
-public record ChangePromotionStatusRequest(PromotionStatus status) {
+import jakarta.validation.constraints.NotNull;
+
+public record ChangePromotionStatusRequest(@NotNull PromotionStatus status) {
 }

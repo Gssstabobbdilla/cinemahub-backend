@@ -2,5 +2,7 @@ package com.cinemahub.cinemahub.membership.dto;
 
 import com.cinemahub.cinemahub.membership.entity.MembershipLevel;
 
-public record ChangeLevelRequest(MembershipLevel level) {
+import jakarta.validation.constraints.NotNull;
+
+public record ChangeLevelRequest(@NotNull MembershipLevel level) {
 }

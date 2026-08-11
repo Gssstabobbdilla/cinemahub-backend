@@ -1,4 +1,6 @@
 package com.cinemahub.cinemahub.movie.dto;
 
-public record AddGenreRequest(Long genreId) {
+import jakarta.validation.constraints.NotNull;
+
+public record AddGenreRequest(@NotNull Long genreId) {
 }

@@ -1,4 +1,6 @@
 package com.cinemahub.cinemahub.security.dto;
 
-public record AssignPermissionRequest(Long permissionId) {
+import jakarta.validation.constraints.NotNull;
+
+public record AssignPermissionRequest(@NotNull Long permissionId) {
 }

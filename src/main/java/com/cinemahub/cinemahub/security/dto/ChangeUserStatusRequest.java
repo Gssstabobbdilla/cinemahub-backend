@@ -2,5 +2,7 @@ package com.cinemahub.cinemahub.security.dto;
 
 import com.cinemahub.cinemahub.security.entity.UserStatus;
 
-public record ChangeUserStatusRequest(UserStatus status) {
+import jakarta.validation.constraints.NotNull;
+
+public record ChangeUserStatusRequest(@NotNull UserStatus status) {
 }

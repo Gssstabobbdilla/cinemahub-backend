@@ -1,4 +1,6 @@
 package com.cinemahub.cinemahub.security.dto;
 
-public record AssignRoleRequest(Long roleId) {
+import jakarta.validation.constraints.NotNull;
+
+public record AssignRoleRequest(@NotNull Long roleId) {
 }
