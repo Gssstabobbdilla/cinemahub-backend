@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.product.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.product.dto.ProductCategoryRequest;
 import com.cinemahub.cinemahub.product.dto.ProductCategoryResponse;
 import com.cinemahub.cinemahub.product.entity.ProductCategory;
@@ -40,13 +41,13 @@ public class ProductCategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductCategoryResponse create(@RequestBody ProductCategoryRequest request) {
+    public ProductCategoryResponse create(@Valid @RequestBody ProductCategoryRequest request) {
         ProductCategory category = productCategoryService.create(request.name());
         return ProductCategoryResponse.from(category);
     }
 
     @PutMapping("/{id}")
-    public ProductCategoryResponse update(@PathVariable Long id, @RequestBody ProductCategoryRequest request) {
+    public ProductCategoryResponse update(@PathVariable Long id, @Valid @RequestBody ProductCategoryRequest request) {
         ProductCategory category = productCategoryService.update(id, request.name());
         return ProductCategoryResponse.from(category);
     }

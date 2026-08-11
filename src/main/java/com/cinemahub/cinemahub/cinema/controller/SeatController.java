@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.cinema.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.cinema.dto.CreateSeatRequest;
 import com.cinemahub.cinemahub.cinema.dto.GenerateSeatsRequest;
 import com.cinemahub.cinemahub.cinema.dto.SeatResponse;
@@ -33,14 +34,14 @@ public class SeatController {
 
     @PostMapping("/api/rooms/{roomId}/seats")
     @ResponseStatus(HttpStatus.CREATED)
-    public SeatResponse create(@PathVariable Long roomId, @RequestBody CreateSeatRequest request) {
+    public SeatResponse create(@PathVariable Long roomId, @Valid @RequestBody CreateSeatRequest request) {
         Seat seat = seatService.create(roomId, request.rowLabel(), request.seatNumber());
         return SeatResponse.from(seat);
     }
 
     @PostMapping("/api/rooms/{roomId}/seats/generate")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<SeatResponse> generateSeats(@PathVariable Long roomId, @RequestBody GenerateSeatsRequest request) {
+    public List<SeatResponse> generateSeats(@PathVariable Long roomId, @Valid @RequestBody GenerateSeatsRequest request) {
         return seatService.generateSeatsForRoom(roomId, request.rowCount(), request.seatsPerRow())
                 .stream().map(SeatResponse::from).toList();
     }

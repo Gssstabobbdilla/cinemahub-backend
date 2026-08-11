@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.security.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.security.dto.AssignPermissionRequest;
 import com.cinemahub.cinemahub.security.dto.PermissionResponse;
 import com.cinemahub.cinemahub.security.dto.RoleRequest;
@@ -42,13 +43,13 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoleResponse create(@RequestBody RoleRequest request) {
+    public RoleResponse create(@Valid @RequestBody RoleRequest request) {
         Role role = roleService.create(request.name(), request.description());
         return RoleResponse.from(role);
     }
 
     @PutMapping("/{id}")
-    public RoleResponse update(@PathVariable Long id, @RequestBody RoleRequest request) {
+    public RoleResponse update(@PathVariable Long id, @Valid @RequestBody RoleRequest request) {
         Role role = roleService.update(id, request.name(), request.description());
         return RoleResponse.from(role);
     }
@@ -68,7 +69,7 @@ public class RoleController {
 
     @PostMapping("/{id}/permissions")
     @ResponseStatus(HttpStatus.CREATED)
-    public void assignPermission(@PathVariable Long id, @RequestBody AssignPermissionRequest request) {
+    public void assignPermission(@PathVariable Long id, @Valid @RequestBody AssignPermissionRequest request) {
         roleService.assignPermission(id, request.permissionId());
     }
 

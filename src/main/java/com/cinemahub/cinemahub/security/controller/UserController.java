@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.security.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.security.dto.AssignRoleRequest;
 import com.cinemahub.cinemahub.security.dto.ChangeUserStatusRequest;
 import com.cinemahub.cinemahub.security.dto.RegisterUserRequest;
@@ -45,20 +46,20 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse register(@RequestBody RegisterUserRequest request) {
+    public UserResponse register(@Valid @RequestBody RegisterUserRequest request) {
         User user = userService.register(
                 request.firstName(), request.lastName(), request.email(), request.password());
         return UserResponse.from(user);
     }
 
     @PutMapping("/{id}/profile")
-    public UserResponse updateProfile(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
+    public UserResponse updateProfile(@PathVariable Long id, @Valid @RequestBody UpdateProfileRequest request) {
         User user = userService.updateProfile(id, request.firstName(), request.lastName(), request.phone());
         return UserResponse.from(user);
     }
 
     @PatchMapping("/{id}/status")
-    public UserResponse changeStatus(@PathVariable Long id, @RequestBody ChangeUserStatusRequest request) {
+    public UserResponse changeStatus(@PathVariable Long id, @Valid @RequestBody ChangeUserStatusRequest request) {
         User user = userService.changeStatus(id, request.status());
         return UserResponse.from(user);
     }
@@ -72,7 +73,7 @@ public class UserController {
 
     @PostMapping("/{id}/roles")
     @ResponseStatus(HttpStatus.CREATED)
-    public void assignRole(@PathVariable Long id, @RequestBody AssignRoleRequest request) {
+    public void assignRole(@PathVariable Long id, @Valid @RequestBody AssignRoleRequest request) {
         userService.assignRole(id, request.roleId());
     }
 

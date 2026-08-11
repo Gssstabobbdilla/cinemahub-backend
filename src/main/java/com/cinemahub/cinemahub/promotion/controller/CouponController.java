@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.promotion.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.promotion.dto.CouponResponse;
 import com.cinemahub.cinemahub.promotion.dto.GenerateCouponRequest;
 import com.cinemahub.cinemahub.promotion.entity.Coupon;
@@ -31,7 +32,7 @@ public class CouponController {
 
     @PostMapping("/api/promotions/{promotionId}/coupons")
     @ResponseStatus(HttpStatus.CREATED)
-    public CouponResponse generate(@PathVariable Long promotionId, @RequestBody GenerateCouponRequest request) {
+    public CouponResponse generate(@PathVariable Long promotionId, @Valid @RequestBody GenerateCouponRequest request) {
         Coupon coupon = couponService.generate(
                 promotionId, request.code(), request.discountPercentage(), request.expiresAt());
         return CouponResponse.from(coupon);

@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.notification.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.notification.dto.CreateNotificationRequest;
 import com.cinemahub.cinemahub.notification.dto.NotificationResponse;
 import com.cinemahub.cinemahub.notification.entity.Notification;
@@ -28,7 +29,7 @@ public class NotificationController {
 
     @PostMapping("/api/notifications")
     @ResponseStatus(HttpStatus.CREATED)
-    public NotificationResponse create(@RequestBody CreateNotificationRequest request) {
+    public NotificationResponse create(@Valid @RequestBody CreateNotificationRequest request) {
         Notification notification = notificationService.create(
                 request.userId(), request.title(), request.message());
         return NotificationResponse.from(notification);

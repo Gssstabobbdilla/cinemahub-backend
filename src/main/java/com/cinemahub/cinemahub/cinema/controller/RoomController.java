@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.cinema.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.cinema.dto.CreateRoomRequest;
 import com.cinemahub.cinemahub.cinema.dto.RoomResponse;
 import com.cinemahub.cinemahub.cinema.entity.Room;
@@ -34,7 +35,7 @@ public class RoomController {
 
     @PostMapping("/api/cinemas/{cinemaId}/rooms")
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomResponse create(@PathVariable Long cinemaId, @RequestBody CreateRoomRequest request) {
+    public RoomResponse create(@PathVariable Long cinemaId, @Valid @RequestBody CreateRoomRequest request) {
         Room room = roomService.create(cinemaId, request.name(), request.capacity());
         return RoomResponse.from(room);
     }

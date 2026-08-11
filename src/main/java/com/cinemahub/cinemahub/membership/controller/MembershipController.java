@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.membership.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.membership.dto.AdjustPointsRequest;
 import com.cinemahub.cinemahub.membership.dto.ChangeLevelRequest;
 import com.cinemahub.cinemahub.membership.dto.MembershipResponse;
@@ -45,13 +46,13 @@ public class MembershipController {
     }
 
     @PostMapping("/api/memberships/{id}/points")
-    public MembershipResponse adjustPoints(@PathVariable Long id, @RequestBody AdjustPointsRequest request) {
+    public MembershipResponse adjustPoints(@PathVariable Long id, @Valid @RequestBody AdjustPointsRequest request) {
         Membership membership = membershipService.adjustPoints(id, request.delta(), request.reason());
         return MembershipResponse.from(membership);
     }
 
     @PatchMapping("/api/memberships/{id}/level")
-    public MembershipResponse changeLevel(@PathVariable Long id, @RequestBody ChangeLevelRequest request) {
+    public MembershipResponse changeLevel(@PathVariable Long id, @Valid @RequestBody ChangeLevelRequest request) {
         Membership membership = membershipService.changeLevel(id, request.level());
         return MembershipResponse.from(membership);
     }

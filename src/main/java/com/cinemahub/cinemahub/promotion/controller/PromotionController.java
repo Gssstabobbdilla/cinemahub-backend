@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.promotion.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.promotion.dto.ChangePromotionStatusRequest;
 import com.cinemahub.cinemahub.promotion.dto.CreatePromotionRequest;
 import com.cinemahub.cinemahub.promotion.dto.PromotionResponse;
@@ -44,14 +45,14 @@ public class PromotionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PromotionResponse create(@RequestBody CreatePromotionRequest request) {
+    public PromotionResponse create(@Valid @RequestBody CreatePromotionRequest request) {
         Promotion promotion = promotionService.create(
                 request.title(), request.discountPercentage(), request.startDate(), request.endDate());
         return PromotionResponse.from(promotion);
     }
 
     @PatchMapping("/{id}/status")
-    public PromotionResponse changeStatus(@PathVariable Long id, @RequestBody ChangePromotionStatusRequest request) {
+    public PromotionResponse changeStatus(@PathVariable Long id, @Valid @RequestBody ChangePromotionStatusRequest request) {
         Promotion promotion = promotionService.changeStatus(id, request.status());
         return PromotionResponse.from(promotion);
     }

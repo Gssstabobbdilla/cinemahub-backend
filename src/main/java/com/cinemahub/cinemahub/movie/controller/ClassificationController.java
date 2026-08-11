@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.movie.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.movie.dto.ClassificationRequest;
 import com.cinemahub.cinemahub.movie.dto.ClassificationResponse;
 import com.cinemahub.cinemahub.movie.entity.Classification;
@@ -40,13 +41,13 @@ public class ClassificationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClassificationResponse create(@RequestBody ClassificationRequest request) {
+    public ClassificationResponse create(@Valid @RequestBody ClassificationRequest request) {
         Classification classification = classificationService.create(request.code(), request.description());
         return ClassificationResponse.from(classification);
     }
 
     @PutMapping("/{id}")
-    public ClassificationResponse update(@PathVariable Long id, @RequestBody ClassificationRequest request) {
+    public ClassificationResponse update(@PathVariable Long id, @Valid @RequestBody ClassificationRequest request) {
         Classification classification = classificationService.update(id, request.code(), request.description());
         return ClassificationResponse.from(classification);
     }

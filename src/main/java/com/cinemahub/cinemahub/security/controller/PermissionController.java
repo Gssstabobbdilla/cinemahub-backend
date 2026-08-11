@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.security.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.security.dto.PermissionRequest;
 import com.cinemahub.cinemahub.security.dto.PermissionResponse;
 import com.cinemahub.cinemahub.security.entity.Permission;
@@ -40,13 +41,13 @@ public class PermissionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PermissionResponse create(@RequestBody PermissionRequest request) {
+    public PermissionResponse create(@Valid @RequestBody PermissionRequest request) {
         Permission permission = permissionService.create(request.name(), request.description());
         return PermissionResponse.from(permission);
     }
 
     @PutMapping("/{id}")
-    public PermissionResponse update(@PathVariable Long id, @RequestBody PermissionRequest request) {
+    public PermissionResponse update(@PathVariable Long id, @Valid @RequestBody PermissionRequest request) {
         Permission permission = permissionService.update(id, request.name(), request.description());
         return PermissionResponse.from(permission);
     }

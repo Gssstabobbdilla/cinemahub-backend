@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.cinema.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.cinema.dto.CinemaResponse;
 import com.cinemahub.cinemahub.cinema.dto.CreateCinemaRequest;
 import com.cinemahub.cinemahub.cinema.dto.UpdateCinemaLocationRequest;
@@ -41,13 +42,13 @@ public class CinemaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CinemaResponse create(@RequestBody CreateCinemaRequest request) {
+    public CinemaResponse create(@Valid @RequestBody CreateCinemaRequest request) {
         Cinema cinema = cinemaService.create(request.name());
         return CinemaResponse.from(cinema);
     }
 
     @PutMapping("/{id}/location")
-    public CinemaResponse updateLocation(@PathVariable Long id, @RequestBody UpdateCinemaLocationRequest request) {
+    public CinemaResponse updateLocation(@PathVariable Long id, @Valid @RequestBody UpdateCinemaLocationRequest request) {
         Cinema cinema = cinemaService.updateLocation(
                 id, request.department(), request.province(), request.district(), request.address());
         return CinemaResponse.from(cinema);

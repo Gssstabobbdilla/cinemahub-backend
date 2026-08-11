@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.movie.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.movie.dto.GenreRequest;
 import com.cinemahub.cinemahub.movie.dto.GenreResponse;
 import com.cinemahub.cinemahub.movie.entity.Genre;
@@ -40,13 +41,13 @@ public class GenreController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GenreResponse create(@RequestBody GenreRequest request) {
+    public GenreResponse create(@Valid @RequestBody GenreRequest request) {
         Genre genre = genreService.create(request.name());
         return GenreResponse.from(genre);
     }
 
     @PutMapping("/{id}")
-    public GenreResponse update(@PathVariable Long id, @RequestBody GenreRequest request) {
+    public GenreResponse update(@PathVariable Long id, @Valid @RequestBody GenreRequest request) {
         Genre genre = genreService.update(id, request.name());
         return GenreResponse.from(genre);
     }

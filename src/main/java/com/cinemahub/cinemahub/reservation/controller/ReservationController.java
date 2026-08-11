@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.reservation.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.reservation.dto.CreateReservationRequest;
 import com.cinemahub.cinemahub.reservation.dto.ReservationResponse;
 import com.cinemahub.cinemahub.reservation.dto.ReservationSeatResponse;
@@ -27,7 +28,7 @@ public class ReservationController {
 
     @PostMapping("/api/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    public ReservationResponse create(@RequestBody CreateReservationRequest request) {
+    public ReservationResponse create(@Valid @RequestBody CreateReservationRequest request) {
         Reservation reservation = reservationService.createReservation(
                 request.userId(), request.showtimeId(), request.seatIds());
         return ReservationResponse.from(reservation);

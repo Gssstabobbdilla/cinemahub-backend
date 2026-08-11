@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.order.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.order.dto.AddProductRequest;
 import com.cinemahub.cinemahub.order.dto.OrderProductResponse;
 import com.cinemahub.cinemahub.order.dto.OrderResponse;
@@ -46,14 +47,14 @@ public class OrderController {
 
     @PostMapping("/api/orders/{id}/products")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderProductResponse addProduct(@PathVariable Long id, @RequestBody AddProductRequest request) {
+    public OrderProductResponse addProduct(@PathVariable Long id, @Valid @RequestBody AddProductRequest request) {
         return OrderProductResponse.from(
                 orderService.addProduct(id, request.productId(), request.quantity()));
     }
 
     @PostMapping("/api/orders/{id}/payments")
     @ResponseStatus(HttpStatus.CREATED)
-    public PaymentResponse registerPayment(@PathVariable Long id, @RequestBody RegisterPaymentRequest request) {
+    public PaymentResponse registerPayment(@PathVariable Long id, @Valid @RequestBody RegisterPaymentRequest request) {
         return PaymentResponse.from(orderService.registerPayment(
                 id, request.paymentMethod(), request.transactionCode(), request.approved()));
     }

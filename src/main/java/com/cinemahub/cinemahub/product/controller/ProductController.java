@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.product.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.product.dto.AdjustStockRequest;
 import com.cinemahub.cinemahub.product.dto.CreateProductRequest;
 import com.cinemahub.cinemahub.product.dto.InventoryMovementResponse;
@@ -54,14 +55,14 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse create(@RequestBody CreateProductRequest request) {
+    public ProductResponse create(@Valid @RequestBody CreateProductRequest request) {
         Product product = productService.create(request.categoryId(), request.name(), request.price());
         return ProductResponse.from(product);
     }
 
     @PostMapping("/{id}/stock")
     @ResponseStatus(HttpStatus.CREATED)
-    public InventoryMovementResponse adjustStock(@PathVariable Long id, @RequestBody AdjustStockRequest request) {
+    public InventoryMovementResponse adjustStock(@PathVariable Long id, @Valid @RequestBody AdjustStockRequest request) {
         return InventoryMovementResponse.from(
                 productService.adjustStock(id, request.movementType(), request.quantity()));
     }

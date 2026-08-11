@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.movie.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.movie.dto.AddGenreRequest;
 import com.cinemahub.cinemahub.movie.dto.ChangeMovieStatusRequest;
 import com.cinemahub.cinemahub.movie.dto.CreateMovieRequest;
@@ -46,13 +47,13 @@ public class MovieController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MovieResponse create(@RequestBody CreateMovieRequest request) {
+    public MovieResponse create(@Valid @RequestBody CreateMovieRequest request) {
         Movie movie = movieService.create(request.title(), request.duration(), request.classificationId());
         return MovieResponse.from(movie);
     }
 
     @PatchMapping("/{id}/status")
-    public MovieResponse changeStatus(@PathVariable Long id, @RequestBody ChangeMovieStatusRequest request) {
+    public MovieResponse changeStatus(@PathVariable Long id, @Valid @RequestBody ChangeMovieStatusRequest request) {
         Movie movie = movieService.changeStatus(id, request.status());
         return MovieResponse.from(movie);
     }
@@ -66,7 +67,7 @@ public class MovieController {
 
     @PostMapping("/{id}/genres")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addGenre(@PathVariable Long id, @RequestBody AddGenreRequest request) {
+    public void addGenre(@PathVariable Long id, @Valid @RequestBody AddGenreRequest request) {
         movieService.addGenre(id, request.genreId());
     }
 

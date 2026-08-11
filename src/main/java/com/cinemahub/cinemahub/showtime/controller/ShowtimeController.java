@@ -1,5 +1,6 @@
 package com.cinemahub.cinemahub.showtime.controller;
 
+import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.showtime.dto.CreateShowtimeRequest;
 import com.cinemahub.cinemahub.showtime.dto.ShowtimeResponse;
 import com.cinemahub.cinemahub.showtime.entity.Showtime;
@@ -55,7 +56,7 @@ public class ShowtimeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ShowtimeResponse create(@RequestBody CreateShowtimeRequest request) {
+    public ShowtimeResponse create(@Valid @RequestBody CreateShowtimeRequest request) {
         Showtime showtime = showtimeService.create(
                 request.movieId(), request.roomId(), request.showDate(),
                 request.startTime(), request.endTime(), request.basePrice());
