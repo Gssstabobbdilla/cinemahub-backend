@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,7 +51,8 @@ class CouponControllerTest {
         OffsetDateTime expiresAt = OffsetDateTime.now().plusDays(30);
         Coupon coupon = new Coupon(promotion(), "STUDENT20", new BigDecimal("20.00"), expiresAt);
         ReflectionTestUtils.setField(coupon, "id", 5L);
-        when(couponService.generate(1L, "STUDENT20", new BigDecimal("20.00"), expiresAt)).thenReturn(coupon);
+        when(couponService.generate(eq(1L), eq("STUDENT20"), any(BigDecimal.class), any(OffsetDateTime.class)))
+                .thenReturn(coupon);
 
         mockMvc.perform(post("/api/promotions/1/coupons")
                         .contentType(APPLICATION_JSON)
@@ -74,7 +77,7 @@ class CouponControllerTest {
     @Test
     void generateReturns409WhenCodeAlreadyExists() throws Exception {
         OffsetDateTime expiresAt = OffsetDateTime.now().plusDays(30);
-        when(couponService.generate(1L, "STUDENT20", new BigDecimal("20.00"), expiresAt))
+        when(couponService.generate(eq(1L), eq("STUDENT20"), any(BigDecimal.class), any(OffsetDateTime.class)))
                 .thenThrow(DuplicateResourceException.of("un cupón", "code", "STUDENT20"));
 
         mockMvc.perform(post("/api/promotions/1/coupons")
