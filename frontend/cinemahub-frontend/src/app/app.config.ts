@@ -10,11 +10,11 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideHttpClient(),
-    provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([loadingInterceptor, authInterceptor, errorInterceptor])
+      provideBrowserGlobalErrorListeners(),
+      provideHttpClient(),
+      provideRouter(routes),
+      provideHttpClient(
+        withInterceptors([loadingInterceptor, authInterceptor, errorInterceptor])
     )
   ]
 };
