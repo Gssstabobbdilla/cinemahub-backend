@@ -1,0 +1,35 @@
+@if (movie(); as m) {
+  <div class="movie-detail">
+    @if (m.posterUrl) {
+      <img [src]="m.posterUrl" [alt]="m.title" class="poster" />
+    }
+    <div class="info">
+      <h2>{{ m.title }}</h2>
+      <p class="meta">{{ m.classification.code }} · {{ m.duration }} min</p>
+      @if (m.synopsis) {
+        <p class="synopsis">{{ m.synopsis }}</p>
+      }
+    </div>
+  </div>
+}
+
+<h3>Funciones</h3>
+
+@if (loading()) {
+  <p>Cargando funciones…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (showtimes().length === 0) {
+  <p>No hay funciones programadas para esta película.</p>
+} @else {
+  <ul class="showtime-list">
+    @for (showtime of showtimes(); track showtime.id) {
+      <li>
+        <a [routerLink]="['/reservas', showtime.id]">
+          {{ showtime.cinemaName }} · {{ showtime.roomName }} — {{ showtime.showDate }} {{ showtime.startTime }}
+          ({{ showtime.format }}, S/ {{ showtime.basePrice }})
+        </a>
+      </li>
+    }
+  </ul>
+}

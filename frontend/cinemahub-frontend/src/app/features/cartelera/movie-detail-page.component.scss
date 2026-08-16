@@ -1,0 +1,53 @@
+.movie-detail {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.poster {
+  width: 220px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.synopsis {
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.showtime-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  a {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      border-color: #3f51b5;
+    }
+  }
+}
+
+.error {
+  color: #c62828;
+}

@@ -1,0 +1,15 @@
+<h2>Cartelera</h2>
+
+@if (loading()) {
+  <p>Cargando películas…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (movies().length === 0) {
+  <p>No hay películas en cartelera por ahora.</p>
+} @else {
+  <div class="movie-grid">
+    @for (movie of movies(); track movie.id) {
+      <app-movie-card [movie]="movie" />
+    }
+  </div>
+}

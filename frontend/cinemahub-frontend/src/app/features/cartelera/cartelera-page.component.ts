@@ -1,10 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
-// Placeholder: se reemplaza por la cartelera real (listado de películas y funciones)
-// cuando construyamos esta feature.
+import { AppError } from '../../core/interceptors/error.interceptor';
+import { Movie } from '../../core/models/movie.model';
+import { MovieService } from '../../core/services/movie.service';
+import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+
 @Component({
   selector: 'app-cartelera-page',
   standalone: true,
-  template: `<h2>Cartelera</h2><p>Próximamente.</p>`
+  imports: [MovieCardComponent],
+  templateUrl: './cartelera-page.component.html',
+  styleUrl: './cartelera-page.component.scss'
 })
-export class CarteleraPageComponent {}
+export class CarteleraPageComponent implements OnInit {
+  private movieService = inject(MovieService);
+
+  movies = signal<Movie[]>([]);
+  loading = signal(true);
+  error = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.movieService.findAll('ACTIVE').subscribe({
+      next: movies => {
+        this.movies.set(movies);
+        this.loading.set(false);
+      },
+      error: (err: AppError) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      }
+    });
+  }
+}
