@@ -1,0 +1,48 @@
+.loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #3f51b5, transparent);
+  background-size: 200% 100%;
+  animation: loading-sweep 1s linear infinite;
+  z-index: 1000;
+}
+
+@keyframes loading-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e0e0e0;
+
+  .brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  nav {
+    display: flex;
+    gap: 1.5rem;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+
+      &.active {
+        font-weight: 600;
+        color: #3f51b5;
+      }
+    }
+  }
+}
+
+main {
+  padding: 2rem;
+}
