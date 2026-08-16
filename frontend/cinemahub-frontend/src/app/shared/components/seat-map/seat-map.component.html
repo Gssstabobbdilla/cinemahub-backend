@@ -1,0 +1,28 @@
+<div class="seat-map">
+  <div class="screen">PANTALLA</div>
+
+  @for (row of rows(); track row.rowLabel) {
+    <div class="row">
+      <span class="row-label">{{ row.rowLabel }}</span>
+      @for (seat of row.seats; track seat.id) {
+        <button
+          type="button"
+          class="seat"
+          [class.taken]="isTaken(seat)"
+          [class.selected]="isSelected(seat)"
+          [disabled]="isTaken(seat)"
+          [attr.aria-label]="'Asiento ' + row.rowLabel + seat.seatNumber"
+          (click)="toggle(seat)"
+        >
+          {{ seat.seatNumber }}
+        </button>
+      }
+    </div>
+  }
+
+  <div class="legend">
+    <span class="legend-item"><span class="swatch"></span> Disponible</span>
+    <span class="legend-item"><span class="swatch selected"></span> Seleccionado</span>
+    <span class="legend-item"><span class="swatch taken"></span> Ocupado</span>
+  </div>
+</div>

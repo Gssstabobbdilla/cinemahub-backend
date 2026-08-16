@@ -1,0 +1,12 @@
+<a class="movie-card" [routerLink]="['/cartelera', movie().id]">
+  @if (movie().posterUrl) {
+    <img [src]="movie().posterUrl" [alt]="movie().title" class="poster" />
+  } @else {
+    <div class="poster placeholder">Sin imagen</div>
+  }
+  <div class="info">
+    <h3 class="title">{{ movie().title }}</h3>
+    <span class="classification">{{ movie().classification.code }}</span>
+    <span class="duration">{{ movie().duration }} min</span>
+  </div>
+</a>
