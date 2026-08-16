@@ -106,6 +106,26 @@ public class ReservationService {
         return reservationSeatRepository.findByReservationId(reservationId);
     }
 
+    /**
+     * Devuelve TODOS los asientos de la sala de esta función, marcando cuáles ya están
+     * tomados. Pensado para que el frontend arme el mapa de butacas antes de reservar.
+     * No hace falta filtrar por status de la reserva: cancel()/expireOverdueReservations()
+     * ya borran la fila de reservation_seats al liberar un asiento, así que cualquier fila
+     * que quede acá para este showtime es, por construcción, de una reserva vigente.
+     */
+    public List<SeatAvailability> findSeatAvailability(Long showtimeId) {
+        Showtime showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Showtime", showtimeId));
+
+        Set<Long> takenSeatIds = reservationSeatRepository.findByShowtimeId(showtimeId).stream()
+                .map(rs -> rs.getSeat().getId())
+                .collect(Collectors.toSet());
+
+        return seatRepository.findByRoomId(showtime.getRoom().getId()).stream()
+                .map(seat -> new SeatAvailability(seat, takenSeatIds.contains(seat.getId())))
+                .toList();
+    }
+
     @Transactional
     public Reservation confirm(Long reservationId) {
         Reservation reservation = findById(reservationId);

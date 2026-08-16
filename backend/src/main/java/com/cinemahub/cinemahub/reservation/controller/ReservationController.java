@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import com.cinemahub.cinemahub.reservation.dto.CreateReservationRequest;
 import com.cinemahub.cinemahub.reservation.dto.ReservationResponse;
 import com.cinemahub.cinemahub.reservation.dto.ReservationSeatResponse;
+import com.cinemahub.cinemahub.reservation.dto.ShowtimeSeatResponse;
 import com.cinemahub.cinemahub.reservation.entity.Reservation;
 import com.cinemahub.cinemahub.reservation.service.ReservationService;
 
@@ -47,6 +48,15 @@ public class ReservationController {
     @GetMapping("/api/users/{userId}/reservations")
     public List<ReservationResponse> findByUser(@PathVariable Long userId) {
         return reservationService.findByUser(userId).stream().map(ReservationResponse::from).toList();
+    }
+
+    // Todos los asientos de la sala de esta función, marcando cuáles ya están tomados —
+    // lo que necesita el frontend para pintar el mapa de butacas antes de reservar.
+    @GetMapping("/api/showtimes/{showtimeId}/seats")
+    public List<ShowtimeSeatResponse> findShowtimeSeats(@PathVariable Long showtimeId) {
+        return reservationService.findSeatAvailability(showtimeId).stream()
+                .map(ShowtimeSeatResponse::from)
+                .toList();
     }
 
     @PostMapping("/api/reservations/{id}/confirm")
