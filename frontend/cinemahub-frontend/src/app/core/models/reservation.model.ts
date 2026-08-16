@@ -19,6 +19,16 @@ export interface ReservationSeat {
   price: number;
 }
 
+// Espejo de ShowtimeSeatResponse (backend): TODOS los asientos de la sala de una función,
+// marcando cuáles ya están tomados. Es lo que consume SeatMapComponent (seats + taken).
+export interface ShowtimeSeat {
+  seatId: number;
+  rowLabel: string;
+  seatNumber: number;
+  seatType: string;
+  taken: boolean;
+}
+
 // userId debería salir del usuario autenticado cuando haya login real; por ahora
 // coincide con ReservationService.createReservation del backend.
 export interface CreateReservationRequest {

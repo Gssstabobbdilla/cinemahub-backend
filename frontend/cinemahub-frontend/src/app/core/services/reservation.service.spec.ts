@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../environments/environment';
-import { CreateReservationRequest, Reservation, ReservationSeat } from '../models/reservation.model';
+import { CreateReservationRequest, Reservation, ReservationSeat, ShowtimeSeat } from '../models/reservation.model';
 import { ReservationService } from './reservation.service';
 
 describe('ReservationService', () => {
@@ -71,5 +71,16 @@ describe('ReservationService', () => {
     const req = httpMock.expectOne(`${apiUrl}/reservations/50/cancel`);
     expect(req.request.method).toBe('POST');
     req.flush(reservation);
+  });
+
+  it('findShowtimeSeats hace GET /showtimes/:showtimeId/seats', () => {
+    const seats: ShowtimeSeat[] = [
+      { seatId: 1, rowLabel: 'A', seatNumber: 1, seatType: 'STANDARD', taken: true },
+      { seatId: 2, rowLabel: 'A', seatNumber: 2, seatType: 'STANDARD', taken: false }
+    ];
+    service.findShowtimeSeats(5).subscribe(res => expect(res).toEqual(seats));
+    const req = httpMock.expectOne(`${apiUrl}/showtimes/5/seats`);
+    expect(req.request.method).toBe('GET');
+    req.flush(seats);
   });
 });

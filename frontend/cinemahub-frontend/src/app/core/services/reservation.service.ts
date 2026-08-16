@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { CreateReservationRequest, Reservation, ReservationSeat } from '../models/reservation.model';
+import { CreateReservationRequest, Reservation, ReservationSeat, ShowtimeSeat } from '../models/reservation.model';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationService {
@@ -22,6 +22,12 @@ export class ReservationService {
 
   findSeats(id: number): Observable<ReservationSeat[]> {
     return this.http.get<ReservationSeat[]>(`${this.apiUrl}/reservations/${id}/seats`);
+  }
+
+  // Todos los asientos de la sala de una función, marcando cuáles ya están tomados —
+  // lo que necesita SeatMapComponent para pintarse antes de que el usuario reserve.
+  findShowtimeSeats(showtimeId: number): Observable<ShowtimeSeat[]> {
+    return this.http.get<ShowtimeSeat[]>(`${this.apiUrl}/showtimes/${showtimeId}/seats`);
   }
 
   findByUser(userId: number): Observable<Reservation[]> {
