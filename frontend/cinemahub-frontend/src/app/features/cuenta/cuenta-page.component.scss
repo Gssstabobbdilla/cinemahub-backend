@@ -1,0 +1,120 @@
+.user-picker {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+  }
+
+  input {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: #3f51b5;
+    color: #fff;
+    cursor: pointer;
+    height: fit-content;
+  }
+}
+
+section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+
+  h3 {
+    margin-bottom: 0.75rem;
+  }
+}
+
+.meta {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 320px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+  }
+
+  input {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+.reservation-toggle {
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  padding: 0.3rem 0;
+  text-align: left;
+  color: #3f51b5;
+}
+
+.seat-list {
+  list-style: none;
+  padding-left: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.notifications ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.notifications li {
+  padding: 0.6rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+
+  &.unread {
+    border-color: #3f51b5;
+    background: #f0f2fb;
+  }
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 0.85rem;
+    color: #555;
+  }
+}
+
+.error {
+  color: #c62828;
+}
