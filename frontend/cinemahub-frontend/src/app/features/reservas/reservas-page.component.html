@@ -1,0 +1,39 @@
+@if (loading()) {
+  <p>Cargando función…</p>
+} @else {
+  @if (showtime(); as s) {
+    <div class="showtime-header">
+      <h2>{{ s.movieTitle }}</h2>
+      <p class="meta">{{ s.cinemaName }} · {{ s.roomName }} — {{ s.showDate }} {{ s.startTime }} ({{ s.format }})</p>
+    </div>
+  }
+
+  <app-seat-map
+    [seats]="seats()"
+    [takenSeatIds]="takenSeatIds()"
+    [selectedSeatIds]="selectedSeatIds()"
+    (selectionChange)="onSelectionChange($event)"
+  />
+
+  <div class="summary">
+    <label>
+      ID de usuario (temporal, hasta que haya login)
+      <input type="number" (input)="onUserIdChange($event)" />
+    </label>
+
+    <p>Asientos seleccionados: {{ selectedSeatIds().length }}</p>
+    <p>Total: S/ {{ total() }}</p>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <button
+      type="button"
+      [disabled]="selectedSeatIds().length === 0 || !userId() || submitting()"
+      (click)="confirmReservation()"
+    >
+      {{ submitting() ? 'Reservando…' : 'Reservar' }}
+    </button>
+  </div>
+}

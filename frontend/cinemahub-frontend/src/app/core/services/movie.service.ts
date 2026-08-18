@@ -9,7 +9,7 @@ import { AddGenreRequest, ChangeMovieStatusRequest, CreateMovieRequest, Genre, M
 export class MovieService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/movies`;
-
+  
   // Sin status trae todas las películas; con status filtra (ACTIVE, COMING_SOON, etc.).
   findAll(status?: MovieStatus): Observable<Movie[]> {
     const params = status ? new HttpParams().set('status', status) : undefined;

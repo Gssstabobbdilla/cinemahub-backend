@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 
-// Se va a expandir cuando construyamos la feature de verdad, por ejemplo:
-// { path: ':showtimeId', loadComponent: () => import('./seat-selection-page.component')... }
+// Siempre se llega acá desde un link con showtimeId (ver MovieDetailPageComponent en la
+// feature cartelera) — no hay una vista de "reservas" sin función elegida todavía.
 export const RESERVAS_ROUTES: Routes = [
   {
-    path: '',
+    path: ':showtimeId',
     loadComponent: () => import('./reservas-page.component').then(m => m.ReservasPageComponent)
   }
 ];
