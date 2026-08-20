@@ -10,6 +10,7 @@ import {
 } from '../../core/models/reservation.model';
 import { User } from '../../core/models/security.model';
 
+import { CurrentUserService } from '../../core/services/current-user.service';
 import { MembershipService } from '../../core/services/membership.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ReservationService } from '../../core/services/reservation.service';
@@ -19,6 +20,7 @@ import { CuentaPageComponent } from './cuenta-page.component';
 
 describe('CuentaPageComponent', () => {
   let fixture: ComponentFixture<CuentaPageComponent>;
+  let currentUserService: CurrentUserService;
 
   let userServiceSpy: {
     findById: ReturnType<typeof vi.fn>;
@@ -121,9 +123,12 @@ describe('CuentaPageComponent', () => {
           provide: NotificationService,
           useValue: notificationServiceSpy
         }
+        // CurrentUserService no se mockea: es un signal simple sin HTTP,
+        // se usa la instancia real provista via providedIn: 'root'.
       ]
     });
 
+    currentUserService = TestBed.inject(CurrentUserService);
     fixture = TestBed.createComponent(CuentaPageComponent);
   });
 
@@ -141,6 +146,10 @@ describe('CuentaPageComponent', () => {
     expect(fixture.componentInstance.reservations()).toEqual([reservation]);
     expect(fixture.componentInstance.membership()).toEqual(membership);
     expect(fixture.componentInstance.notifications()).toEqual([notification]);
+
+    // loadAccount debe compartir el userId con CurrentUserService (para que
+    // reservas lo herede si el usuario navega ahí después).
+    expect(currentUserService.userId()).toBe(1);
   });
 
   it('si el usuario no tiene membresía (404), setea membershipNotFound', () => {
@@ -162,7 +171,7 @@ describe('CuentaPageComponent', () => {
   });
 
   it('createMembership crea la membresía y limpia membershipNotFound', () => {
-    fixture.componentInstance.userId.set(1);
+    currentUserService.setUserId(1);
 
     membershipServiceSpy.createForUser.mockReturnValue(of(membership));
 
@@ -219,7 +228,7 @@ describe('CuentaPageComponent', () => {
   });
 
   it('saveProfile guarda los cambios y sale del modo edición', () => {
-    fixture.componentInstance.userId.set(1);
+    currentUserService.setUserId(1);
     fixture.componentInstance.profileFirstName.set('Ana');
     fixture.componentInstance.profileLastName.set('Editada');
     fixture.componentInstance.profilePhone.set('999999999');
@@ -243,5 +252,25 @@ describe('CuentaPageComponent', () => {
 
     expect(fixture.componentInstance.user()).toEqual(updated);
     expect(fixture.componentInstance.editingProfile()).toBe(false);
+  });
+
+  it('ngOnInit no autocarga la cuenta si CurrentUserService no tiene userId', () => {
+    fixture.componentInstance.ngOnInit();
+
+    expect(userServiceSpy.findById).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.userIdInput()).toBeNull();
+  });
+
+  it('ngOnInit precarga y carga la cuenta si CurrentUserService ya tenía un userId (ej. viniendo de reservas)', () => {
+    currentUserService.setUserId(1);
+    userServiceSpy.findById.mockReturnValue(of(user));
+    reservationServiceSpy.findByUser.mockReturnValue(of([]));
+    membershipServiceSpy.findByUser.mockReturnValue(of(membership));
+    notificationServiceSpy.findByUser.mockReturnValue(of([]));
+
+    fixture.componentInstance.ngOnInit();
+
+    expect(fixture.componentInstance.userIdInput()).toBe(1);
+    expect(userServiceSpy.findById).toHaveBeenCalledWith(1);
   });
 });

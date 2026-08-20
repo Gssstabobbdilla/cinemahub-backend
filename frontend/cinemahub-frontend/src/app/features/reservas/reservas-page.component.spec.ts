@@ -5,12 +5,14 @@ import { vi } from 'vitest';
 
 import { Reservation, ShowtimeSeat } from '../../core/models/reservation.model';
 import { Showtime } from '../../core/models/showtime.model';
+import { CurrentUserService } from '../../core/services/current-user.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { ShowtimeService } from '../../core/services/showtime.service';
 import { ReservasPageComponent } from './reservas-page.component';
 
 describe('ReservasPageComponent', () => {
   let fixture: ComponentFixture<ReservasPageComponent>;
+  let currentUserService: CurrentUserService;
 
   let showtimeServiceSpy: {
     findById: ReturnType<typeof vi.fn>;
@@ -100,9 +102,11 @@ describe('ReservasPageComponent', () => {
             }
           }
         }
+        // CurrentUserService: instancia real (providedIn: 'root'), sin mock.
       ]
     });
 
+    currentUserService = TestBed.inject(CurrentUserService);
     fixture = TestBed.createComponent(ReservasPageComponent);
   });
 
@@ -136,6 +140,14 @@ describe('ReservasPageComponent', () => {
     ).toBe(25);
   });
 
+  it('userId proviene de CurrentUserService (compartido con cuenta)', () => {
+    fixture.detectChanges();
+
+    currentUserService.setUserId(7);
+
+    expect(fixture.componentInstance.userId()).toBe(7);
+  });
+
   it('confirmReservation no hace nada sin userId ni asientos seleccionados', () => {
     fixture.detectChanges();
 
@@ -159,7 +171,7 @@ describe('ReservasPageComponent', () => {
 
     fixture.detectChanges();
 
-    fixture.componentInstance.userId.set(1);
+    currentUserService.setUserId(1);
     fixture.componentInstance.onSelectionChange([2]);
 
     fixture.componentInstance.confirmReservation();
@@ -187,7 +199,7 @@ describe('ReservasPageComponent', () => {
 
     fixture.detectChanges();
 
-    fixture.componentInstance.userId.set(1);
+    currentUserService.setUserId(1);
     fixture.componentInstance.onSelectionChange([2]);
 
     fixture.componentInstance.confirmReservation();

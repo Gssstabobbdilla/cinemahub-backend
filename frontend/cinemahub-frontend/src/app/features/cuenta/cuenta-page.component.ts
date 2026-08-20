@@ -3,12 +3,10 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { AppError } from '../../core/interceptors/error.interceptor';
 import { Membership } from '../../core/models/membership.model';
 import { Notification } from '../../core/models/notification.model';
-import {
-  Reservation,
-  ReservationSeat
-} from '../../core/models/reservation.model';
+import { Reservation, ReservationSeat } from '../../core/models/reservation.model';
 import { User } from '../../core/models/security.model';
 
+import { CurrentUserService } from '../../core/services/current-user.service';
 import { MembershipService } from '../../core/services/membership.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ReservationService } from '../../core/services/reservation.service';
@@ -25,9 +23,13 @@ export class CuentaPageComponent implements OnInit {
   private reservationService = inject(ReservationService);
   private membershipService = inject(MembershipService);
   private notificationService = inject(NotificationService);
+  private currentUser = inject(CurrentUserService);
 
+  // userIdInput es el valor que el usuario está tipeando (puede no coincidir todavía
+  // con la cuenta cargada); userId es el id de la cuenta efectivamente cargada, y vive
+  // en CurrentUserService para compartirse con reservas.
   userIdInput = signal<number | null>(null);
-  userId = signal<number | null>(null);
+  userId = this.currentUser.userId;
 
   user = signal<User | null>(null);
   reservations = signal<Reservation[]>([]);
@@ -54,11 +56,17 @@ export class CuentaPageComponent implements OnInit {
 
   showOnlyUnread = signal(false);
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Si ya había un usuario cargado desde reservas, precargamos el input y la cuenta.
+    const existing = this.currentUser.userId();
+    if (existing) {
+      this.userIdInput.set(existing);
+      this.loadAccount();
+    }
+  }
 
   onUserIdInputChange(event: Event): void {
     const value = (event.target as HTMLInputElement).valueAsNumber;
-
     this.userIdInput.set(Number.isNaN(value) ? null : value);
   }
 
@@ -70,7 +78,7 @@ export class CuentaPageComponent implements OnInit {
       return;
     }
 
-    this.userId.set(userId);
+    this.currentUser.setUserId(userId);
     this.loading.set(true);
     this.error.set(null);
     this.membershipNotFound.set(false);
@@ -101,7 +109,6 @@ export class CuentaPageComponent implements OnInit {
           this.membershipNotFound.set(true);
           return;
         }
-
         this.error.set(err.message);
       }
     });
@@ -113,6 +120,11 @@ export class CuentaPageComponent implements OnInit {
 
     this.loading.set(false);
   }
+
+  // ... el resto de los métodos (startEditProfile, onFirstNameChange, saveProfile,
+  // toggleReservationSeats, etc.) quedan EXACTAMENTE igual — no dependen de userId
+  // directamente, ya usan this.userId() que ahora apunta al signal del service.
+
 
   startEditProfile(): void {
     const user = this.user();

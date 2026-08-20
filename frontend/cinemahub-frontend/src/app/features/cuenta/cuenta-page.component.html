@@ -3,7 +3,7 @@
 <div class="user-picker">
   <label>
     ID de usuario (temporal, hasta que haya login)
-    <input type="number" (input)="onUserIdInputChange($event)" />
+    <input type="number" [value]="userIdInput() ?? ''" (input)="onUserIdInputChange($event)" />
   </label>
   <button type="button" (click)="loadAccount()">Cargar cuenta</button>
 </div>
