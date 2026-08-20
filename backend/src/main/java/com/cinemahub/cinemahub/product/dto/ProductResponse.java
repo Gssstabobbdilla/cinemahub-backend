@@ -13,13 +13,15 @@ public record ProductResponse(
         String description,
         BigDecimal price,
         Integer stock,
-        ProductStatus status
+        ProductStatus status,
+        String imageUrl
 ) {
+
 
     public static ProductResponse from(Product product) {
         return new ProductResponse(
                 product.getId(), product.getCategory().getId(), product.getCategory().getName(),
                 product.getName(), product.getDescription(), product.getPrice(),
-                product.getStock(), product.getStatus());
+                product.getStock(), product.getStatus(), product.getImageUrl());
     }
 }

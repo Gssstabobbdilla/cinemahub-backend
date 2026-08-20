@@ -39,6 +39,9 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
 
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private ProductStatus status = ProductStatus.ACTIVE;
@@ -104,6 +107,15 @@ public class Product {
     public void setStatus(ProductStatus status) {
         this.status = status;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
     @Override
     public boolean equals(Object o) {

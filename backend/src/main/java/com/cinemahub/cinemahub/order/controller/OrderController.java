@@ -63,4 +63,12 @@ public class OrderController {
     public OrderResponse cancel(@PathVariable Long id) {
         return OrderResponse.from(orderService.cancel(id));
     }
+
+    @GetMapping("/api/reservations/{reservationId}/order")
+    public OrderResponse findByReservation(@PathVariable Long reservationId) {
+        return OrderResponse.from(
+                orderService.findByReservation(reservationId)
+        );
+    }
+
 }

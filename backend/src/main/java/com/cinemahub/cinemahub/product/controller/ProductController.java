@@ -56,9 +56,14 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse create(@Valid @RequestBody CreateProductRequest request) {
-        Product product = productService.create(request.categoryId(), request.name(), request.price());
+        Product product = productService.create(
+            request.categoryId(),
+            request.name(),
+            request.price(),
+            request.imageUrl()
+        );
         return ProductResponse.from(product);
-    }
+    };
 
     @PostMapping("/{id}/stock")
     @ResponseStatus(HttpStatus.CREATED)

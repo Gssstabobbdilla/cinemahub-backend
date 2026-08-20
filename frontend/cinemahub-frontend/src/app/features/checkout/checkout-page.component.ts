@@ -48,9 +48,22 @@ export class CheckoutPageComponent implements OnInit {
       error: (err: AppError) => this.error.set(err.message)
     });
 
+    //this.productService.search({ status: 'ACTIVE' }).subscribe({
+      //next: products => this.availableProducts.set(products)
+    //});
+
     this.productService.search({ status: 'ACTIVE' }).subscribe({
-      next: products => this.availableProducts.set(products)
+      next: products => {
+        console.log('PRODUCTOS DEL CHECKOUT:', products);
+        this.availableProducts.set(products);
+      },
+      error: err => {
+        console.error('ERROR PRODUCTOS:', err);
+        this.error.set(err.message);
+      }
     });
+
+
 
     this.orderService.createFromReservation(this.reservationId).subscribe({
       next: order => this.onOrderReady(order),

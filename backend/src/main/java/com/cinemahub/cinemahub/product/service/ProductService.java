@@ -46,11 +46,16 @@ public class ProductService {
     }
 
     @Transactional
-    public Product create(Long categoryId, String name, BigDecimal price) {
+    public Product create(Long categoryId, String name, BigDecimal price, String imageUrl) {
         ProductCategory category = productCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> ResourceNotFoundException.of("ProductCategory", categoryId));
-        return productRepository.save(new Product(category, name, price));
+
+        Product product = new Product(category, name, price);
+        product.setImageUrl(imageUrl);
+
+        return productRepository.save(product);
     }
+
 
     /**
      * Ajusta el stock del producto y deja registro en inventory_movements.

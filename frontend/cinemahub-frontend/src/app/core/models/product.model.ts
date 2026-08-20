@@ -18,6 +18,7 @@ export interface Product {
   categoryName: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   price: number;
   stock: number;
   status: ProductStatus;
@@ -29,6 +30,7 @@ export interface CreateProductRequest {
   categoryId: number;
   name: string;
   price: number;
+  imageUrl?: string;
 }
 
 export interface AdjustStockRequest {

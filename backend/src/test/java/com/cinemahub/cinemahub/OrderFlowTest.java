@@ -106,7 +106,7 @@ class OrderFlowTest {
                 user.getId(), showtime.getId(), List.of(seat.getId()));
 
         ProductCategory category = productCategoryService.create("Snacks Test");
-        popcorn = productService.create(category.getId(), "Canchita", new BigDecimal("12.50"));
+        popcorn = productService.create(category.getId(), "Canchita", new BigDecimal("12.50"), "https://www.google.com/imgres?q=popcoorn&imgurl=https%3A%2F%2Frecipeforperfection.com%2Fwp-content%2Fuploads%2F2017%2F11%2FMovie-Theater-Popcorn-in-a-popcorn-bucket.jpg&imgrefurl=https%3A%2F%2Frecipeforperfection.com%2Fbetter-than-movie-theater-popcorn%2F&docid=aNODsUZdeIzUsM&tbnid=HkyLet46XU8XQM&vet=12ahUKEwiB6IamnrCWAxWVqpUCHVkSG-YQnPAOegQIMhAA..i&w=680&h=1020&hcb=2&ved=2ahUKEwiB6IamnrCWAxWVqpUCHVkSG-YQnPAOegQIMhAA");
         productService.adjustStock(popcorn.getId(), MovementType.IN, 100);
     }
 

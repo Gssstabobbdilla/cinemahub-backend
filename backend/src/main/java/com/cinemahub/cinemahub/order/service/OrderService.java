@@ -58,6 +58,12 @@ public class OrderService {
                 .orElseThrow(() -> ResourceNotFoundException.of("Order", id));
     }
 
+    public Order findByReservation(Long reservationId) {
+        return orderRepository.findByReservationId(reservationId)
+                .orElseThrow(() ->
+                        ResourceNotFoundException.of("Order", reservationId));
+    }
+
     /**
      * Crea la orden a partir de una reserva ya existente. El total inicial es la suma
      * de los reservation_seats; addProduct() lo va incrementando si se agregan productos
@@ -142,4 +148,5 @@ public class OrderService {
         order.setStatus(OrderStatus.CANCELLED);
         return order;
     }
+
 }

@@ -44,6 +44,7 @@ describe('CheckoutPageComponent', () => {
       categoryName: 'Snacks',
       name: 'Canchita',
       description: null,
+      imageUrl: null,
       price: 12.5,
       stock: 10,
       status: 'ACTIVE'

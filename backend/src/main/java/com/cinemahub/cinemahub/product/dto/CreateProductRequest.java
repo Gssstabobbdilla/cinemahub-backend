@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public record CreateProductRequest(
         @NotNull Long categoryId,
         @NotBlank @Size(max = 150) String name,
-        @NotNull @PositiveOrZero BigDecimal price
+        @NotNull @PositiveOrZero BigDecimal price,
+        @Size(max = 500) String imageUrl
 ) {
 }

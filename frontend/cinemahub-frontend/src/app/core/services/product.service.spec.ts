@@ -16,10 +16,12 @@ describe('ProductService', () => {
     categoryName: 'Snacks',
     name: 'Nachos',
     description: null,
+    imageUrl: null,
     price: 12,
     stock: 0,
     status: 'ACTIVE'
   };
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({
