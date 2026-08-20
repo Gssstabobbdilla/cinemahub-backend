@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppError } from '../../core/interceptors/error.interceptor';
 import { Seat } from '../../core/models/cinema.model';
 import { Showtime } from '../../core/models/showtime.model';
+import { CurrentUserService } from '../../core/services/current-user.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { ShowtimeService } from '../../core/services/showtime.service';
 import { SeatMapComponent } from '../../shared/components/seat-map/seat-map.component';
@@ -20,6 +21,7 @@ export class ReservasPageComponent implements OnInit {
   private router = inject(Router);
   private showtimeService = inject(ShowtimeService);
   private reservationService = inject(ReservationService);
+  private currentUser = inject(CurrentUserService);
 
   showtime = signal<Showtime | null>(null);
   seats = signal<Seat[]>([]);
@@ -30,9 +32,7 @@ export class ReservasPageComponent implements OnInit {
   error = signal<string | null>(null);
   submitting = signal(false);
 
-  // TODO: reemplazar por el id del usuario autenticado cuando exista login real
-  // (el authInterceptor y TokenStorageService ya están listos para ese momento).
-  userId = signal<number | null>(null);
+  userId = this.currentUser.userId;
 
   total = computed(() => {
     const showtime = this.showtime();
@@ -74,7 +74,7 @@ export class ReservasPageComponent implements OnInit {
 
   onUserIdChange(event: Event): void {
     const value = (event.target as HTMLInputElement).valueAsNumber;
-    this.userId.set(Number.isNaN(value) ? null : value);
+    this.currentUser.setUserId(Number.isNaN(value) ? null : value);
   }
 
   onSelectionChange(seatIds: number[]): void {

@@ -4,11 +4,12 @@ import { AppError } from '../../core/interceptors/error.interceptor';
 import { Movie } from '../../core/models/movie.model';
 import { MovieService } from '../../core/services/movie.service';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cartelera-page',
   standalone: true,
-  imports: [MovieCardComponent],
+  imports: [CommonModule, MovieCardComponent], // <-- Asegúrate de tenerlo aquí
   templateUrl: './cartelera-page.component.html',
   styleUrl: './cartelera-page.component.scss'
 })
