@@ -80,4 +80,11 @@ describe('OrderService', () => {
     expect(req.request.method).toBe('POST');
     req.flush(order);
   });
+
+  it('findByReservation hace GET /reservations/:reservationId/order', () => {
+    service.findByReservation(7).subscribe(res => expect(res).toEqual(order));
+    const req = httpMock.expectOne(`${apiUrl}/reservations/7/order`);
+    expect(req.request.method).toBe('GET');
+    req.flush(order);
+  });
 });

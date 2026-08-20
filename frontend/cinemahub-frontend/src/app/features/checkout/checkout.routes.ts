@@ -4,7 +4,7 @@ import { Routes } from '@angular/router';
 // { path: ':orderId', loadComponent: () => import('./checkout-page.component')... }
 export const CHECKOUT_ROUTES: Routes = [
   {
-    path: '',
+    path: ':reservationId',
     loadComponent: () => import('./checkout-page.component').then(m => m.CheckoutPageComponent)
   }
 ];

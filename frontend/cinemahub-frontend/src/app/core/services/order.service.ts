@@ -14,6 +14,12 @@ export class OrderService {
     return this.http.post<Order>(`${this.apiUrl}/reservations/${reservationId}/order`, {});
   }
 
+  // Recupera la orden ya creada para una reserva (checkout recargado a mitad de camino,
+  // doble submit, etc.) — se usa cuando createFromReservation responde 409.
+  findByReservation(reservationId: number): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/reservations/${reservationId}/order`);
+  }
+
   findById(id: number): Observable<Order> {
     return this.http.get<Order>(`${this.apiUrl}/orders/${id}`);
   }

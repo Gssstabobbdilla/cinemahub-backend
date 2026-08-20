@@ -1,0 +1,86 @@
+@if (loading()) {
+  <p>Cargando orden…</p>
+} @else {
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (order(); as o) {
+    <h2>Checkout — Orden #{{ o.id }}</h2>
+    <p class="meta">Estado: <strong>{{ o.status }}</strong></p>
+
+    <section class="seats">
+      <h3>Asientos</h3>
+      <ul>
+        @for (seat of seats(); track seat.seatId) {
+          <li>{{ seat.rowLabel }}{{ seat.seatNumber }} — S/ {{ seat.price }}</li>
+        }
+      </ul>
+    </section>
+
+    @if (o.status === 'CANCELLED') {
+      <p class="error">Esta orden fue cancelada.</p>
+    } @else if (o.status === 'PAID' || paid()) {
+      <section class="confirmation">
+        <h3>¡Pago confirmado!</h3>
+        <p>Total pagado: S/ {{ o.total }}</p>
+        <button type="button" (click)="goToAccount()">Ir a mi cuenta</button>
+      </section>
+    } @else {
+      <section class="products">
+        <h3>Dulcería (opcional)</h3>
+
+        @if (orderProducts().length > 0) {
+          <ul class="order-products">
+            @for (op of orderProducts(); track op.productId) {
+              <li>{{ op.productName }} × {{ op.quantity }} — S/ {{ op.lineTotal }}</li>
+            }
+          </ul>
+        }
+
+        <ul class="available-products">
+          @for (product of availableProducts(); track product.id) {
+            <li>
+              <span>{{ product.name }} — S/ {{ product.price }}</span>
+              <input
+                type="number"
+                min="1"
+                [value]="quantityFor(product.id)"
+                (input)="onQuantityChange(product.id, $event)"
+              />
+              <button type="button" [disabled]="addingProduct()" (click)="addProduct(product.id)">
+                Agregar
+              </button>
+            </li>
+          } @empty {
+            <li>No hay productos disponibles.</li>
+          }
+        </ul>
+      </section>
+
+      <section class="payment">
+        <h3>Pago</h3>
+        <p class="total">Total: S/ {{ o.total }}</p>
+
+        <label>
+          Método de pago
+          <select (change)="onPaymentMethodChange($event)">
+            <option value="CARD">Tarjeta</option>
+            <option value="CASH">Efectivo</option>
+            <option value="YAPE">Yape</option>
+            <option value="PLIN">Plin</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button type="button" [disabled]="paying()" (click)="pay()">
+            {{ paying() ? 'Procesando…' : 'Pagar' }}
+          </button>
+          <button type="button" class="cancel" [disabled]="cancelling()" (click)="cancelOrder()">
+            {{ cancelling() ? 'Cancelando…' : 'Cancelar orden' }}
+          </button>
+        </div>
+      </section>
+    }
+  }
+}
