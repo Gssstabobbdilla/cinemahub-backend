@@ -8,7 +8,8 @@ import {
   CreateProductRequest,
   InventoryMovement,
   Product,
-  ProductStatus
+  ProductStatus,
+  UpdateProductRequest
 } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
@@ -42,5 +43,9 @@ export class ProductService {
 
   findMovements(id: number): Observable<InventoryMovement[]> {
     return this.http.get<InventoryMovement[]>(`${this.baseUrl}/${id}/movements`);
+  }
+
+  update(id: number, request: UpdateProductRequest): Observable<Product> {
+    return this.http.put<Product>(`${this.baseUrl}/${id}`, request);
   }
 }

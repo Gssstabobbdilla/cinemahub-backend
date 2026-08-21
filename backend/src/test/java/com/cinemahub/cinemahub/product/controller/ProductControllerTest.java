@@ -5,6 +5,7 @@ import com.cinemahub.cinemahub.product.dto.CreateProductRequest;
 import com.cinemahub.cinemahub.product.entity.Product;
 import com.cinemahub.cinemahub.product.entity.ProductCategory;
 import com.cinemahub.cinemahub.product.service.ProductService;
+import com.cinemahub.cinemahub.product.dto.UpdateProductRequest;
 
 import tools.jackson.databind.json.JsonMapper;
 
@@ -23,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -74,4 +77,44 @@ class ProductControllerTest {
         mockMvc.perform(get("/api/products/99"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+void updateReturns200WithValidRequest() throws Exception {
+    ProductCategory category = new ProductCategory("Snacks");
+    ReflectionTestUtils.setField(category, "id", 1L);
+    Product product = new Product(category, "Nachos Grande", new BigDecimal("15.00"));
+    ReflectionTestUtils.setField(product, "id", 5L);
+    when(productService.update(5L, "Nachos Grande", new BigDecimal("15.00"), "https://x.com/img.png", "Con queso"))
+            .thenReturn(product);
+
+    mockMvc.perform(put("/api/products/5")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(
+                            new UpdateProductRequest("Nachos Grande", new BigDecimal("15.00"), "https://x.com/img.png", "Con queso"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Nachos Grande"))
+            .andExpect(jsonPath("$.price").value(15.00));
+}
+
+@Test
+void updateReturns400WhenNameIsBlank() throws Exception {
+    mockMvc.perform(put("/api/products/5")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(
+                            new UpdateProductRequest("", new BigDecimal("15.00"), null, null))))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fields.name").exists());
+}
+
+@Test
+void updateReturns404WhenProductNotFound() throws Exception {
+    when(productService.update(99L, "X", new BigDecimal("10.00"), null, null))
+            .thenThrow(new ResourceNotFoundException("Product no encontrado: id=99"));
+
+    mockMvc.perform(put("/api/products/99")
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(
+                            new UpdateProductRequest("X", new BigDecimal("10.00"), null, null))))
+            .andExpect(status().isNotFound());
+}
 }

@@ -1,0 +1,85 @@
+<div class="page-header">
+  <h2>Productos</h2>
+  <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nuevo producto</button>
+</div>
+
+@if (error() && !showForm()) {
+  <p class="error">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="status-message">Cargando productos…</p>
+} @else if (products().length === 0) {
+  <p class="empty">No hay productos activos todavía.</p>
+} @else {
+  <div class="product-grid">
+    @for (product of products(); track product.id) {
+      <div class="product-card">
+        @if (product.imageUrl) {
+          <img [src]="product.imageUrl" [alt]="product.name" class="product-image" />
+        } @else {
+          <div class="product-image placeholder">🍿</div>
+        }
+        <div class="product-body">
+          <span class="category-tag">{{ categoryName(product.categoryId) }}</span>
+          <h4>{{ product.name }}</h4>
+          <p class="price">S/ {{ product.price }}</p>
+          <p class="stock">Stock: {{ product.stock }}</p>
+          <button type="button" class="btn-secondary" (click)="openEditForm(product)">Editar</button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ editingProduct() ? 'Editar producto' : 'Nuevo producto' }}</h3>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <label>
+        Nombre
+        <input type="text" [value]="formName()" (input)="onNameChange($event)" />
+      </label>
+
+      <label>
+        Precio (S/)
+        <input type="number" step="0.01" [value]="formPrice() ?? ''" (input)="onPriceChange($event)" />
+      </label>
+
+      @if (!editingProduct()) {
+        <label>
+          Categoría
+          <select (change)="onCategoryChange($event)">
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+        </label>
+      }
+
+      <label>
+        URL de imagen
+        <input type="text" [value]="formImageUrl()" (input)="onImageUrlChange($event)" placeholder="https://…" />
+      </label>
+
+      @if (editingProduct()) {
+        <label>
+          Descripción
+          <textarea [value]="formDescription()" (input)="onDescriptionChange($event)"></textarea>
+        </label>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

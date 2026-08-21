@@ -5,6 +5,8 @@ import com.cinemahub.cinemahub.product.dto.AdjustStockRequest;
 import com.cinemahub.cinemahub.product.dto.CreateProductRequest;
 import com.cinemahub.cinemahub.product.dto.InventoryMovementResponse;
 import com.cinemahub.cinemahub.product.dto.ProductResponse;
+import com.cinemahub.cinemahub.product.dto.UpdateProductRequest;
+
 import com.cinemahub.cinemahub.product.entity.Product;
 import com.cinemahub.cinemahub.product.entity.ProductStatus;
 import com.cinemahub.cinemahub.product.service.ProductService;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 import java.util.List;
 
@@ -75,5 +79,11 @@ public class ProductController {
     @GetMapping("/{id}/movements")
     public List<InventoryMovementResponse> findMovements(@PathVariable Long id) {
         return productService.findMovements(id).stream().map(InventoryMovementResponse::from).toList();
+    }
+
+    @PutMapping("/{id}")
+    public ProductResponse update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
+        Product product = productService.update(id, request.name(), request.price(), request.imageUrl(), request.description());
+        return ProductResponse.from(product);
     }
 }

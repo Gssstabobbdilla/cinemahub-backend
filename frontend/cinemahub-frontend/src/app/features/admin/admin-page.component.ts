@@ -1,10 +1,19 @@
 import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-// Placeholder: se reemplaza por el CRUD de películas, cines, salas, funciones,
-// productos y promociones cuando construyamos esta feature.
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  template: `<h2>Administración</h2><p>Próximamente.</p>`
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  templateUrl: './admin-page.component.html',
+  styleUrl: './admin-page.component.scss'
 })
-export class AdminPageComponent {}
+export class AdminPageComponent {
+  sections = [
+    { path: 'productos', label: 'Productos', icon: '🍿' },
+    { path: 'peliculas', label: 'Películas', icon: '🎬' },
+    { path: 'cines', label: 'Cines y salas', icon: '🏢' },
+    { path: 'funciones', label: 'Funciones', icon: '🕐' },
+    { path: 'promociones', label: 'Promociones', icon: '🏷️' }
+  ];
+}

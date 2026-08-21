@@ -45,3 +45,10 @@ export interface InventoryMovement {
   quantity: number;
   createdAt: string;
 }
+
+export interface UpdateProductRequest {
+  name: string;
+  price: number;
+  imageUrl?: string;
+  description?: string;
+}

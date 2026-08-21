@@ -81,4 +81,14 @@ public class ProductService {
     public List<InventoryMovement> findMovements(Long productId) {
         return inventoryMovementRepository.findByProductId(productId);
     }
+
+    @Transactional
+    public Product update(Long id, String name, BigDecimal price, String imageUrl, String description) {
+        Product product = findById(id);
+        product.setName(name);
+        product.setPrice(price);
+        product.setImageUrl(imageUrl);
+        product.setDescription(description);
+        return product;
+    }
 }

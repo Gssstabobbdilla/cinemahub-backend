@@ -79,4 +79,14 @@ describe('ProductService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(movements);
   });
+
+  it('update hace PUT /products/:id con el body correcto', () => {
+    const request = { name: 'Nachos Grande', price: 15, imageUrl: 'https://x.com/nachos.png', description: 'Con queso' };
+    const updated: Product = { ...product, name: 'Nachos Grande', price: 15 };
+    service.update(5, request).subscribe(res => expect(res).toEqual(updated));
+    const req = httpMock.expectOne(`${baseUrl}/5`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(request);
+    req.flush(updated);
+  });
 });

@@ -1,0 +1,22 @@
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <h2 class="admin-brand">Administración</h2>
+
+    <nav>
+      @for (section of sections; track section.path) {
+        <a
+          [routerLink]="[section.path]"
+          routerLinkActive="active"
+          class="nav-item"
+        >
+          <span class="icon">{{ section.icon }}</span>
+          {{ section.label }}
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="admin-content">
+    <router-outlet />
+  </div>
+</div>
