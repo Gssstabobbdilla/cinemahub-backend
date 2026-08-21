@@ -22,6 +22,7 @@ public record ProductResponse(
         return new ProductResponse(
                 product.getId(), product.getCategory().getId(), product.getCategory().getName(),
                 product.getName(), product.getDescription(), product.getPrice(),
-                product.getStock(), product.getStatus(), product.getImageUrl());
+                product.getStock(), product.getStatus(), product.getImageUrl()
+        );
     }
 }
