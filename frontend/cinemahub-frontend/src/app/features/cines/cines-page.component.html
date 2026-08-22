@@ -1,0 +1,156 @@
+<div class="page-header">
+  <h2>Cines y salas</h2>
+  <button type="button" class="btn-primary" (click)="openCreateCinemaForm()">+ Nuevo cine</button>
+</div>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+<div class="cines-layout">
+  <div class="cines-list">
+    @if (loading()) {
+      <p class="status-message">Cargando cines…</p>
+    } @else if (cinemas().length === 0) {
+      <p class="empty">No hay cines registrados todavía.</p>
+    } @else {
+      @for (cinema of cinemas(); track cinema.id) {
+        <div
+          class="cinema-item"
+          [class.selected]="selectedCinema()?.id === cinema.id"
+          (click)="selectCinema(cinema)"
+        >
+          <div class="cinema-info">
+            <h4>{{ cinema.name }}</h4>
+            <p class="meta">
+              {{ cinema.district || cinema.province || 'Sin ubicación' }}
+            </p>
+          </div>
+          <div class="cinema-actions">
+            <button type="button" class="icon-btn" (click)="openEditCinemaForm(cinema); $event.stopPropagation()">✎</button>
+            <button type="button" class="icon-btn danger" (click)="deleteCinema(cinema); $event.stopPropagation()">🗑</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="rooms-panel">
+    @if (!selectedCinema()) {
+      <p class="empty">Selecciona un cine para ver sus salas.</p>
+    } @else {
+      <div class="panel-header">
+        <h3>Salas — {{ selectedCinema()!.name }}</h3>
+        <button type="button" class="btn-primary" (click)="openCreateRoomForm()">+ Nueva sala</button>
+      </div>
+
+      @if (loadingRooms()) {
+        <p class="status-message">Cargando salas…</p>
+      } @else if (rooms().length === 0) {
+        <p class="empty">Este cine todavía no tiene salas.</p>
+      } @else {
+        <div class="room-grid">
+          @for (room of rooms(); track room.id) {
+            <div class="room-card">
+              <div class="room-info">
+                <h4>{{ room.name }}</h4>
+                <p class="meta">{{ room.type }} · Capacidad {{ room.capacity }}</p>
+                <p class="seat-count">
+                  🪑 {{ seatCountFor(room.id) }} asiento(s) generado(s)
+                </p>
+              </div>
+
+              @if (generatingSeatsFor() === room.id) {
+                <div class="seat-generator">
+                  <label>
+                    Filas
+                    <input type="number" min="1" [value]="seatRowCount() ?? ''" (input)="onRowCountChange($event)" />
+                  </label>
+                  <label>
+                    Asientos/fila
+                    <input type="number" min="1" [value]="seatsPerRow() ?? ''" (input)="onSeatsPerRowChange($event)" />
+                  </label>
+                  <div class="seat-generator-actions">
+                    <button type="button" class="btn-secondary" (click)="closeSeatGenerator()">Cancelar</button>
+                    <button type="button" class="btn-primary" [disabled]="generatingSeats()" (click)="confirmGenerateSeats(room.id)">
+                      {{ generatingSeats() ? 'Generando…' : 'Generar' }}
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="room-actions">
+                  <button type="button" class="btn-secondary" (click)="openSeatGenerator(room)">Generar asientos</button>
+                  <button type="button" class="icon-btn danger" (click)="deleteRoom(room)">🗑</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
+
+@if (showCinemaForm()) {
+  <div class="modal-overlay" (click)="closeCinemaForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ editingCinema() ? 'Editar cine' : 'Nuevo cine' }}</h3>
+
+      <label>
+        Nombre
+        <input type="text" [value]="formName()" (input)="onNameChange($event)" />
+      </label>
+
+      @if (editingCinema()) {
+        <label>
+          Departamento
+          <input type="text" [value]="formDepartment()" (input)="onDepartmentChange($event)" />
+        </label>
+        <label>
+          Provincia
+          <input type="text" [value]="formProvince()" (input)="onProvinceChange($event)" />
+        </label>
+        <label>
+          Distrito
+          <input type="text" [value]="formDistrict()" (input)="onDistrictChange($event)" />
+        </label>
+        <label>
+          Dirección
+          <input type="text" [value]="formAddress()" (input)="onAddressChange($event)" />
+        </label>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeCinemaForm()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="savingCinema()" (click)="saveCinema()">
+          {{ savingCinema() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRoomForm()) {
+  <div class="modal-overlay" (click)="closeRoomForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Nueva sala</h3>
+
+      <label>
+        Nombre
+        <input type="text" [value]="roomName()" (input)="onRoomNameChange($event)" />
+      </label>
+
+      <label>
+        Capacidad
+        <input type="number" [value]="roomCapacity() ?? ''" (input)="onRoomCapacityChange($event)" />
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeRoomForm()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="savingRoom()" (click)="saveRoom()">
+          {{ savingRoom() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

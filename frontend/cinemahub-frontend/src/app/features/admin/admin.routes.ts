@@ -14,6 +14,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'peliculas',
         loadComponent: () => import('../peliculas/peliculas-page.component').then(m => m.PeliculasPageComponent)
+      },
+      {
+        path: 'cines',
+        loadComponent: () => import('../cines/cines-page.component').then(m => m.CinesPageComponent)
       }
       // próximos: 'peliculas', 'cines', 'funciones', 'promociones' — mismo patrón
     ]

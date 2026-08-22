@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { Cinema, CreateCinemaRequest, UpdateCinemaLocationRequest } from '../models/cinema.model';
+import { Cinema, CreateCinemaRequest, UpdateCinemaLocationRequest, UpdateCinemaRequest } from '../models/cinema.model';
 
 @Injectable({ providedIn: 'root' })
 export class CinemaService {
@@ -28,5 +28,9 @@ export class CinemaService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  update(id: number, request: UpdateCinemaRequest): Observable<Cinema> {
+    return this.http.put<Cinema>(`${this.baseUrl}/${id}`, request);
   }
 }

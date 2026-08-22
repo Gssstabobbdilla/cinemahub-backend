@@ -6,6 +6,7 @@ import com.cinemahub.cinemahub.cinema.dto.CreateCinemaRequest;
 import com.cinemahub.cinemahub.cinema.dto.UpdateCinemaLocationRequest;
 import com.cinemahub.cinemahub.cinema.entity.Cinema;
 import com.cinemahub.cinemahub.cinema.service.CinemaService;
+import com.cinemahub.cinemahub.cinema.dto.UpdateCinemaRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,5 +59,12 @@ public class CinemaController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         cinemaService.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public CinemaResponse update(@PathVariable Long id, @Valid @RequestBody UpdateCinemaRequest request) {
+        Cinema cinema = cinemaService.update(
+                id, request.name(), request.department(), request.province(), request.district(), request.address());
+        return CinemaResponse.from(cinema);
     }
 }

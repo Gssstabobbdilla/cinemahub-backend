@@ -55,3 +55,11 @@ export interface GenerateSeatsRequest {
   rowCount: number;
   seatsPerRow: number;
 }
+
+export interface UpdateCinemaRequest {
+  name: string;
+  department?: string;
+  province?: string;
+  district?: string;
+  address?: string;
+}

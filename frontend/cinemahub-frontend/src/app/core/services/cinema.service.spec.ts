@@ -69,4 +69,14 @@ describe('CinemaService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+
+  it('update hace PUT /cinemas/:id con el body correcto', () => {
+    const request = { name: 'Cineplanet Alcázar Renovado', department: 'Lima', province: 'Lima', district: 'Miraflores', address: 'Av. X 123' };
+    const updated: Cinema = { ...cinema, name: 'Cineplanet Alcázar Renovado' };
+    service.update(1, request).subscribe(res => expect(res).toEqual(updated));
+    const req = httpMock.expectOne(`${baseUrl}/1`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(request);
+    req.flush(updated);
+  });
 });

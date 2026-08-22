@@ -47,4 +47,15 @@ public class CinemaService {
     public void delete(Long id) {
         cinemaRepository.delete(findById(id));
     }
+
+    @Transactional
+    public Cinema update(Long id, String name, String department, String province, String district, String address) {
+        Cinema cinema = findById(id);
+        cinema.setName(name);
+        cinema.setDepartment(department);
+        cinema.setProvince(province);
+        cinema.setDistrict(district);
+        cinema.setAddress(address);
+        return cinema;
+    }
 }
