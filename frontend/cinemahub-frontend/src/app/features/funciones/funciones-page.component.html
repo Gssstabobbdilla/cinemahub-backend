@@ -1,0 +1,192 @@
+<div class="page-header">
+  <h2>Funciones</h2>
+  <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nueva función</button>
+</div>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}
+
+<div class="search-card">
+  <div class="search-tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.active]="searchMode() === 'movie'"
+      (click)="setSearchMode('movie')"
+    >
+      Por película
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.active]="searchMode() === 'room'"
+      (click)="setSearchMode('room')"
+    >
+      Por cine y fecha
+    </button>
+  </div>
+
+  @if (searchMode() === 'movie') {
+    <div class="search-row">
+      <label>
+        Película
+        <select (change)="onSearchMovieChange($event)">
+          <option [value]="null">Selecciona…</option>
+          @for (movie of movies(); track movie.id) {
+            <option [value]="movie.id">{{ movie.title }}</option>
+          }
+        </select>
+      </label>
+      <button type="button" class="btn-primary" [disabled]="loading()" (click)="search()">
+        {{ loading() ? 'Buscando…' : 'Buscar' }}
+      </button>
+    </div>
+  } @else {
+    <div class="search-row">
+      <label>
+        Cine
+        <select (change)="onSearchCinemaChange($event)">
+          <option [value]="null">Selecciona…</option>
+          @for (cinema of cinemas(); track cinema.id) {
+            <option [value]="cinema.id">{{ cinema.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Sala
+        <select [disabled]="rooms().length === 0" (change)="onSearchRoomChange($event)">
+          <option [value]="null">Selecciona…</option>
+          @for (room of rooms(); track room.id) {
+            <option [value]="room.id">{{ room.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Fecha
+        <input type="date" (change)="onSearchDateChange($event)" />
+      </label>
+
+      <button type="button" class="btn-primary" [disabled]="loading()" (click)="search()">
+        {{ loading() ? 'Buscando…' : 'Buscar' }}
+      </button>
+    </div>
+  }
+</div>
+
+@if (searched()) {
+  @if (showtimes().length === 0) {
+    <p class="empty">No se encontraron funciones con esos filtros.</p>
+  } @else {
+    <div class="showtime-table">
+      <div class="table-header">
+        <span>Película</span>
+        <span>Cine / Sala</span>
+        <span>Fecha</span>
+        <span>Horario</span>
+        <span>Formato</span>
+        <span>Precio</span>
+        <span>Estado</span>
+        <span></span>
+      </div>
+
+      @for (s of showtimes(); track s.id) {
+        <div class="table-row">
+          <span class="cell-title">{{ s.movieTitle }}</span>
+          <span>{{ s.cinemaName }} · {{ s.roomName }}</span>
+          <span>{{ s.showDate }}</span>
+          <span>{{ s.startTime }} – {{ s.endTime }}</span>
+          <span>{{ s.format }}</span>
+          <span>S/ {{ s.basePrice }}</span>
+          <span>
+            <span class="status-badge" [class]="'status-' + s.status.toLowerCase()">
+              {{ statusLabel(s.status) }}
+            </span>
+          </span>
+          <span>
+            @if (s.status === 'SCHEDULED') {
+              <button
+                type="button"
+                class="icon-btn danger"
+                [disabled]="cancellingId() === s.id"
+                (click)="cancelShowtime(s)"
+              >
+                {{ cancellingId() === s.id ? '…' : 'Cancelar' }}
+              </button>
+            }
+          </span>
+        </div>
+      }
+    </div>
+  }
+}
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Nueva función</h3>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <label>
+        Película
+        <select (change)="onFormMovieChange($event)">
+          @for (movie of movies(); track movie.id) {
+            <option [value]="movie.id">{{ movie.title }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Cine
+        <select (change)="onFormCinemaChange($event)">
+          <option [value]="null">Selecciona…</option>
+          @for (cinema of cinemas(); track cinema.id) {
+            <option [value]="cinema.id">{{ cinema.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Sala
+        <select [disabled]="formRooms().length === 0" (change)="onFormRoomChange($event)">
+          @for (room of formRooms(); track room.id) {
+            <option [value]="room.id">{{ room.name }} ({{ room.capacity }} asientos)</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Fecha
+        <input type="date" [value]="formDate()" (input)="onFormDateChange($event)" />
+      </label>
+
+      <div class="time-row">
+        <label>
+          Hora inicio
+          <input type="time" [value]="formStartTime()" (input)="onFormStartTimeChange($event)" />
+        </label>
+        <label>
+          Hora fin
+          <input type="time" [value]="formEndTime()" (input)="onFormEndTimeChange($event)" />
+        </label>
+      </div>
+
+      <label>
+        Precio base (S/)
+        <input type="number" step="0.01" [value]="formBasePrice() ?? ''" (input)="onFormBasePriceChange($event)" />
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
