@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @Service
 @Transactional(readOnly = true)
@@ -81,5 +82,21 @@ public class MovieService {
 
     public List<MovieGenre> findGenres(Long movieId) {
         return movieGenreRepository.findById_MovieId(movieId);
+    }
+
+    @Transactional
+    public Movie update(Long id, String title, String synopsis, Integer duration, LocalDate releaseDate,
+                        String posterUrl, String trailerUrl, Long classificationId) {
+        Movie movie = findById(id);
+        Classification classification = classificationRepository.findById(classificationId)
+                .orElseThrow(() -> ResourceNotFoundException.of("Classification", classificationId));
+        movie.setTitle(title);
+        movie.setSynopsis(synopsis);
+        movie.setDuration(duration);
+        movie.setReleaseDate(releaseDate);
+        movie.setPosterUrl(posterUrl);
+        movie.setTrailerUrl(trailerUrl);
+        movie.setClassification(classification);
+        return movie;
     }
 }

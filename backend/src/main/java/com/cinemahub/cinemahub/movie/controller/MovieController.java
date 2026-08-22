@@ -9,6 +9,7 @@ import com.cinemahub.cinemahub.movie.dto.MovieResponse;
 import com.cinemahub.cinemahub.movie.entity.Movie;
 import com.cinemahub.cinemahub.movie.entity.MovieStatus;
 import com.cinemahub.cinemahub.movie.service.MovieService;
+import com.cinemahub.cinemahub.movie.dto.UpdateMovieRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
@@ -76,4 +78,12 @@ public class MovieController {
     public void removeGenre(@PathVariable Long id, @PathVariable Long genreId) {
         movieService.removeGenre(id, genreId);
     }
+
+    @PutMapping("/{id}")
+    public MovieResponse update(@PathVariable Long id, @Valid @RequestBody UpdateMovieRequest request) {
+        Movie movie = movieService.update(
+                id, request.title(), request.synopsis(), request.duration(), request.releaseDate(),
+                request.posterUrl(), request.trailerUrl(), request.classificationId());
+        return MovieResponse.from(movie);
+    }   
 }

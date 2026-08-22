@@ -51,3 +51,13 @@ export interface ChangeMovieStatusRequest {
 export interface AddGenreRequest {
   genreId: number;
 }
+
+export interface UpdateMovieRequest {
+  title: string;
+  synopsis?: string;
+  duration: number;
+  releaseDate?: string;
+  posterUrl?: string;
+  trailerUrl?: string;
+  classificationId: number;
+}

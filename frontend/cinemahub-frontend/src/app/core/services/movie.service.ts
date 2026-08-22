@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { AddGenreRequest, ChangeMovieStatusRequest, CreateMovieRequest, Genre, Movie, MovieStatus } from '../models/movie.model';
+import { AddGenreRequest, ChangeMovieStatusRequest, CreateMovieRequest, Genre, Movie, MovieStatus, UpdateMovieRequest } from '../models/movie.model';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -39,4 +39,9 @@ export class MovieService {
   removeGenre(id: number, genreId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}/genres/${genreId}`);
   }
+
+  update(id: number, request: UpdateMovieRequest): Observable<Movie> {
+    return this.http.put<Movie>(`${this.baseUrl}/${id}`, request);
+  }
 }
+

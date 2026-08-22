@@ -3,8 +3,9 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../environments/environment';
-import { Classification, CreateMovieRequest, Genre, Movie } from '../models/movie.model';
+import { Classification, CreateMovieRequest, Genre, Movie, UpdateMovieRequest } from '../models/movie.model';
 import { MovieService } from './movie.service';
+
 
 describe('MovieService', () => {
   let service: MovieService;
@@ -94,5 +95,22 @@ describe('MovieService', () => {
     const req = httpMock.expectOne(`${baseUrl}/1/genres/2`);
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
+  });
+
+  it('update hace PUT /movies/:id con el body correcto', () => {
+    const request: UpdateMovieRequest = {
+      title: 'Dune: Parte 3 (Extendida)',
+      synopsis: 'Nueva sinopsis',
+      duration: 180,
+      releaseDate: '2026-12-01',
+      posterUrl: 'https://x.com/poster.png',
+      trailerUrl: 'https://x.com/trailer.mp4',
+      classificationId: 1
+    };
+    service.update(1, request).subscribe(res => expect(res).toEqual(movie));
+    const req = httpMock.expectOne(`${baseUrl}/1`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(request);
+    req.flush(movie);
   });
 });

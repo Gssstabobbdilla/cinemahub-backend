@@ -1,0 +1,127 @@
+<div class="page-header">
+  <h2>Películas</h2>
+  <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nueva película</button>
+</div>
+
+@if (error() && !showForm()) {
+  <p class="error">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="status-message">Cargando películas…</p>
+} @else if (movies().length === 0) {
+  <p class="empty">No hay películas registradas todavía.</p>
+} @else {
+  <div class="movie-grid">
+    @for (movie of movies(); track movie.id) {
+      <div class="movie-card">
+        @if (movie.posterUrl) {
+          <img [src]="movie.posterUrl" [alt]="movie.title" class="movie-poster" />
+        } @else {
+          <div class="movie-poster placeholder">🎬</div>
+        }
+
+        <div class="movie-body">
+          <span class="classification-tag">{{ movie.classification.code }}</span>
+          <h4>{{ movie.title }}</h4>
+          <p class="meta">{{ movie.duration }} min</p>
+
+          <div class="genre-chips">
+            @for (genre of genresFor(movie.id); track genre.id) {
+              <span class="genre-chip">
+                {{ genre.name }}
+                <button type="button" class="chip-remove" (click)="removeGenre(movie.id, genre.id)">×</button>
+              </span>
+            }
+
+            @if (addingGenreTo() === movie.id) {
+              <span class="genre-add-form">
+                <select (change)="onSelectedGenreChange($event)">
+                  @for (genre of allGenres(); track genre.id) {
+                    <option [value]="genre.id">{{ genre.name }}</option>
+                  }
+                </select>
+                <button type="button" (click)="confirmAddGenre(movie.id)">✓</button>
+                <button type="button" (click)="cancelAddGenre()">×</button>
+              </span>
+            } @else {
+              <button type="button" class="genre-chip add" (click)="startAddGenre(movie.id)">+ género</button>
+            }
+          </div>
+
+          <label class="status-select">
+            Estado
+            <select [value]="movie.status" (change)="changeStatus(movie, $event)">
+              <option value="ACTIVE">En cartelera</option>
+              <option value="COMING_SOON">Próximamente</option>
+              <option value="INACTIVE">Inactiva</option>
+              <option value="ARCHIVED">Archivada</option>
+            </select>
+          </label>
+
+          <button type="button" class="btn-secondary" (click)="openEditForm(movie)">Editar</button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (showForm()) {
+  <div class="modal-overlay" (click)="closeForm()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ editingMovie() ? 'Editar película' : 'Nueva película' }}</h3>
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <label>
+        Título
+        <input type="text" [value]="formTitle()" (input)="onTitleChange($event)" />
+      </label>
+
+      <label>
+        Duración (min)
+        <input type="number" [value]="formDuration() ?? ''" (input)="onDurationChange($event)" />
+      </label>
+
+      <label>
+        Clasificación
+        <select (change)="onClassificationChange($event)">
+          @for (c of classifications(); track c.id) {
+            <option [value]="c.id" [selected]="c.id === formClassificationId()">{{ c.code }}</option>
+          }
+        </select>
+      </label>
+
+      @if (editingMovie()) {
+        <label>
+          Sinopsis
+          <textarea [value]="formSynopsis()" (input)="onSynopsisChange($event)"></textarea>
+        </label>
+
+        <label>
+          Fecha de estreno
+          <input type="date" [value]="formReleaseDate()" (input)="onReleaseDateChange($event)" />
+        </label>
+
+        <label>
+          URL de póster
+          <input type="text" [value]="formPosterUrl()" (input)="onPosterUrlChange($event)" placeholder="https://…" />
+        </label>
+
+        <label>
+          URL de tráiler
+          <input type="text" [value]="formTrailerUrl()" (input)="onTrailerUrlChange($event)" placeholder="https://…" />
+        </label>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+        <button type="button" class="btn-primary" [disabled]="saving()" (click)="save()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
