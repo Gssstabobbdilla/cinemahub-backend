@@ -41,22 +41,22 @@ class ProductControllerTest {
 
     @Test
     void createReturns201WithValidRequest() throws Exception {
+        String imageUrl = "https://www.google.com/imgres?q=nachos&imgurl=https%3A%2F%2Fassets.tmecosys.com%2Fimage%2Fupload%2Ft_web_rdp_recipe_584x480%2Fimg%2Frecipe%2Fras%2FAssets%2F7695121e-8b9a-4d00-ab96-4430e47266ba%2FDerivates%2F445ffdd9-9a8e-48fa-9e86-84c1e94469ca.jpg&imgrefurl=https%3A%2F%2Fcookidoo.mx%2Frecipes%2Frecipe%2Fes-MX%2Fr735813&docid=r7jhZCpXS-AuaM&tbnid=CI4CR_bYBB75DM&vet=12ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA..i&w=584&h=480&hcb=2&ved=2ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA";
         ProductCategory category = new ProductCategory("Snacks");
         ReflectionTestUtils.setField(category, "id", 1L);
         Product product = new Product(category, "Nachos", new BigDecimal("12.00"));
         ReflectionTestUtils.setField(product, "id", 5L);
-        when(productService.create(1L, "Nachos", new BigDecimal("12.00"),
-         "https://www.google.com/imgres?q=nachos&imgurl=https%3A%2F%2Fassets.tmecosys.com%2Fimage%2Fupload%2Ft_web_rdp_recipe_584x480%2Fimg%2Frecipe%2Fras%2FAssets%2F7695121e-8b9a-4d00-ab96-4430e47266ba%2FDerivates%2F445ffdd9-9a8e-48fa-9e86-84c1e94469ca.jpg&imgrefurl=https%3A%2F%2Fcookidoo.mx%2Frecipes%2Frecipe%2Fes-MX%2Fr735813&docid=r7jhZCpXS-AuaM&tbnid=CI4CR_bYBB75DM&vet=12ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA..i&w=584&h=480&hcb=2&ved=2ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA")).thenReturn(product);
+        ReflectionTestUtils.setField(product, "imageUrl", imageUrl);
+        when(productService.create(1L, "Nachos", new BigDecimal("12.00"),imageUrl)).thenReturn(product);
 
         mockMvc.perform(post("/api/products")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new CreateProductRequest(1L, "Nachos", new BigDecimal("12.00"), 
-                            "https://www.google.com/imgres?q=nachos&imgurl=https%3A%2F%2Fassets.tmecosys.com%2Fimage%2Fupload%2Ft_web_rdp_recipe_584x480%2Fimg%2Frecipe%2Fras%2FAssets%2F7695121e-8b9a-4d00-ab96-4430e47266ba%2FDerivates%2F445ffdd9-9a8e-48fa-9e86-84c1e94469ca.jpg&imgrefurl=https%3A%2F%2Fcookidoo.mx%2Frecipes%2Frecipe%2Fes-MX%2Fr735813&docid=r7jhZCpXS-AuaM&tbnid=CI4CR_bYBB75DM&vet=12ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA..i&w=584&h=480&hcb=2&ved=2ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA"))))
+                                new CreateProductRequest(1L, "Nachos", new BigDecimal("12.00"), imageUrl))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Nachos"))
                 .andExpect(jsonPath("$.categoryName").value("Snacks"))
-                .andExpect(jsonPath("$.imageUrl").value("https://www.google.com/imgres?q=nachos&imgurl=https%3A%2F%2Fassets.tmecosys.com%2Fimage%2Fupload%2Ft_web_rdp_recipe_584x480%2Fimg%2Frecipe%2Fras%2FAssets%2F7695121e-8b9a-4d00-ab96-4430e47266ba%2FDerivates%2F445ffdd9-9a8e-48fa-9e86-84c1e94469ca.jpg&imgrefurl=https%3A%2F%2Fcookidoo.mx%2Frecipes%2Frecipe%2Fes-MX%2Fr735813&docid=r7jhZCpXS-AuaM&tbnid=CI4CR_bYBB75DM&vet=12ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA..i&w=584&h=480&hcb=2&ved=2ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA"));
+                .andExpect(jsonPath("$.imageUrl").value(imageUrl));
     }
 
     @Test
