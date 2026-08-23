@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { AppError } from '../../core/interceptors/error.interceptor';
-import { Product, ProductCategory } from '../../core/models/product.model';
+import { MovementType, Product, ProductCategory } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { ProductCategoryService } from '../../core/services/productCategory.service';
 
@@ -31,6 +31,12 @@ export class ProductosPageComponent implements OnInit {
   formImageUrl = signal('');
   formDescription = signal('');
 
+  // --- ajuste de stock ---
+  adjustingStockFor = signal<number | null>(null);
+  stockMovementType = signal<MovementType>('IN');
+  stockQuantity = signal<number | null>(null);
+  savingStock = signal(false);
+
   ngOnInit(): void {
     this.categoryService.findAll().subscribe({
       next: categories => this.categories.set(categories)
@@ -40,8 +46,6 @@ export class ProductosPageComponent implements OnInit {
 
   private loadProducts(): void {
     this.loading.set(true);
-    // El backend no expone un findAll() sin filtros para productos; ACTIVE cubre
-    // el caso principal de administración diaria.
     this.productService.search({ status: 'ACTIVE' }).subscribe({
       next: products => {
         this.products.set(products);
@@ -152,5 +156,52 @@ export class ProductosPageComponent implements OnInit {
         this.saving.set(false);
       }
     });
+  }
+
+  // --- ajuste de stock ---
+  openStockAdjuster(product: Product): void {
+    this.adjustingStockFor.set(product.id);
+    this.stockMovementType.set('IN');
+    this.stockQuantity.set(null);
+    this.error.set(null);
+  }
+
+  closeStockAdjuster(): void {
+    this.adjustingStockFor.set(null);
+  }
+
+  onStockMovementTypeChange(event: Event): void {
+    this.stockMovementType.set((event.target as HTMLSelectElement).value as MovementType);
+  }
+
+  onStockQuantityChange(event: Event): void {
+    const value = (event.target as HTMLInputElement).valueAsNumber;
+    this.stockQuantity.set(Number.isNaN(value) || value < 1 ? null : value);
+  }
+
+  confirmStockAdjustment(productId: number): void {
+    const quantity = this.stockQuantity();
+
+    if (!quantity) {
+      this.error.set('Ingresa una cantidad válida.');
+      return;
+    }
+
+    this.savingStock.set(true);
+    this.error.set(null);
+
+    this.productService
+      .adjustStock(productId, { movementType: this.stockMovementType(), quantity })
+      .subscribe({
+        next: () => {
+          this.savingStock.set(false);
+          this.adjustingStockFor.set(null);
+          this.loadProducts();
+        },
+        error: (err: AppError) => {
+          this.error.set(err.message);
+          this.savingStock.set(false);
+        }
+      });
   }
 }

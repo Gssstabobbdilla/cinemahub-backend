@@ -3,7 +3,7 @@
   <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nuevo producto</button>
 </div>
 
-@if (error() && !showForm()) {
+@if (error() && !showForm() && adjustingStockFor() === null) {
   <p class="error">{{ error() }}</p>
 }
 
@@ -24,7 +24,47 @@
           <span class="category-tag">{{ categoryName(product.categoryId) }}</span>
           <h4>{{ product.name }}</h4>
           <p class="price">S/ {{ product.price }}</p>
-          <p class="stock">Stock: {{ product.stock }}</p>
+
+          <div class="stock-row">
+            <span class="stock-badge" [class.low]="product.stock <= 5">
+              Stock: {{ product.stock }}
+            </span>
+            <button type="button" class="link-btn" (click)="openStockAdjuster(product)">Ajustar</button>
+          </div>
+
+          @if (adjustingStockFor() === product.id) {
+            <div class="stock-adjuster">
+              @if (error()) {
+                <p class="error inline">{{ error() }}</p>
+              }
+              <div class="stock-adjuster-row">
+                <select [value]="stockMovementType()" (change)="onStockMovementTypeChange($event)">
+                  <option value="IN">Entrada (+)</option>
+                  <option value="OUT">Salida (−)</option>
+                  <option value="ADJUSTMENT">Ajuste (+)</option>
+                </select>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="Cant."
+                  [value]="stockQuantity() ?? ''"
+                  (input)="onStockQuantityChange($event)"
+                />
+              </div>
+              <div class="stock-adjuster-actions">
+                <button type="button" class="btn-secondary" (click)="closeStockAdjuster()">Cancelar</button>
+                <button
+                  type="button"
+                  class="btn-primary"
+                  [disabled]="savingStock()"
+                  (click)="confirmStockAdjustment(product.id)"
+                >
+                  {{ savingStock() ? 'Guardando…' : 'Confirmar' }}
+                </button>
+              </div>
+            </div>
+          }
+
           <button type="button" class="btn-secondary" (click)="openEditForm(product)">Editar</button>
         </div>
       </div>

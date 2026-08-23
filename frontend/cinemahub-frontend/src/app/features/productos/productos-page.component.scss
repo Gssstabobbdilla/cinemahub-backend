@@ -164,3 +164,75 @@
   color: #3f51b5;
   border: 1px solid #3f51b5;
 }
+
+.stock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stock-badge {
+  font-size: 0.78rem;
+  color: #666;
+
+  &.low {
+    color: #c62828;
+    font-weight: 600;
+  }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #3f51b5;
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.stock-adjuster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #f8f8fc;
+  padding: 0.6rem;
+  border-radius: 8px;
+}
+
+.stock-adjuster-row {
+  display: flex;
+  gap: 0.4rem;
+
+  select {
+    flex: 1.4;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.78rem;
+  }
+
+  input {
+    flex: 1;
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.78rem;
+  }
+}
+
+.stock-adjuster-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+
+  button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.78rem;
+  }
+}
+
+.error.inline {
+  margin: 0;
+  font-size: 0.75rem;
+}

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
-import { Product, ProductCategory } from '../../core/models/product.model';
+import { Product, ProductCategory} from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { ProductCategoryService } from '../../core/services/productCategory.service';
 
@@ -15,6 +15,7 @@ describe('ProductosPageComponent', () => {
     search: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
     update: ReturnType<typeof vi.fn>;
+    adjustStock: ReturnType<typeof vi.fn>;
   };
 
   let categoryServiceSpy: {
@@ -42,7 +43,8 @@ describe('ProductosPageComponent', () => {
     productServiceSpy = {
       search: vi.fn(),
       create: vi.fn(),
-      update: vi.fn()
+      update: vi.fn(),
+      adjustStock: vi.fn()
     };
 
     categoryServiceSpy = {
@@ -200,4 +202,46 @@ describe('ProductosPageComponent', () => {
     expect(fixture.componentInstance.showForm()).toBe(false);
     expect(fixture.componentInstance.error()).toBeNull();
   });
+
+  it('confirmStockAdjustment valida que haya una cantidad ingresada', () => {
+  fixture.detectChanges();
+  fixture.componentInstance.openStockAdjuster(product);
+
+  fixture.componentInstance.confirmStockAdjustment(5);
+
+  expect(fixture.componentInstance.error()).toBe('Ingresa una cantidad válida.');
+  expect(productServiceSpy.adjustStock).not.toHaveBeenCalled();
+});
+
+it('confirmStockAdjustment ajusta el stock y recarga los productos', () => {
+  const movement = { id: 1, productId: 5, movementType: 'IN' as const, quantity: 50, createdAt: 'x' };
+  productServiceSpy.adjustStock.mockReturnValue(of(movement));
+
+  fixture.detectChanges();
+  fixture.componentInstance.openStockAdjuster(product);
+  fixture.componentInstance.stockMovementType.set('IN');
+  fixture.componentInstance.stockQuantity.set(50);
+
+  fixture.componentInstance.confirmStockAdjustment(5);
+
+  expect(productServiceSpy.adjustStock).toHaveBeenCalledWith(5, { movementType: 'IN', quantity: 50 });
+  expect(fixture.componentInstance.adjustingStockFor()).toBeNull();
+  expect(productServiceSpy.search).toHaveBeenCalledTimes(2);
+});
+
+it('confirmStockAdjustment setea error() cuando el stock queda insuficiente (OUT)', () => {
+  productServiceSpy.adjustStock.mockReturnValue(
+    throwError(() => ({ status: 400, message: 'Stock insuficiente para Nachos' }))
+  );
+
+  fixture.detectChanges();
+  fixture.componentInstance.openStockAdjuster(product);
+  fixture.componentInstance.stockMovementType.set('OUT');
+  fixture.componentInstance.stockQuantity.set(999);
+
+  fixture.componentInstance.confirmStockAdjustment(5);
+
+  expect(fixture.componentInstance.error()).toBe('Stock insuficiente para Nachos');
+  expect(fixture.componentInstance.savingStock()).toBe(false);
+});
 });
