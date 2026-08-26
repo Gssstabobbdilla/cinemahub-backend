@@ -1,0 +1,43 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <h2>CinemaHub</h2>
+
+    <div class="mode-tabs">
+      <button type="button" class="tab" [class.active]="mode() === 'login'" (click)="setMode('login')">
+        Iniciar sesión
+      </button>
+      <button type="button" class="tab" [class.active]="mode() === 'register'" (click)="setMode('register')">
+        Crear cuenta
+      </button>
+    </div>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    @if (mode() === 'register') {
+      <label>
+        Nombre
+        <input type="text" [value]="firstName()" (input)="onFirstNameChange($event)" />
+      </label>
+      <label>
+        Apellido
+        <input type="text" [value]="lastName()" (input)="onLastNameChange($event)" />
+      </label>
+    }
+
+    <label>
+      Email
+      <input type="email" [value]="email()" (input)="onEmailChange($event)" />
+    </label>
+
+    <label>
+      Contraseña
+      <input type="password" [value]="password()" (input)="onPasswordChange($event)" />
+    </label>
+
+    <button type="button" class="btn-primary" [disabled]="loading()" (click)="submit()">
+      {{ loading() ? 'Procesando…' : (mode() === 'login' ? 'Ingresar' : 'Crear cuenta') }}
+    </button>
+  </div>
+</div>

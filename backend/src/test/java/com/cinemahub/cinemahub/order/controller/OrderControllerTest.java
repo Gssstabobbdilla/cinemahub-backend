@@ -25,7 +25,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
 @WebMvcTest(OrderController.class)
+@AutoConfigureMockMvc(addFilters = false)
+
 class OrderControllerTest {
 
     @Autowired
@@ -37,6 +42,9 @@ class OrderControllerTest {
     @MockitoBean
     private OrderService orderService;
 
+    @MockitoBean
+    private JwtService jwtService;
+    
     @Test
     void createFromReservationReturns201() throws Exception {
         User user = new User("Pepe", "Test", "pepe@cinemahub.local", "hash");

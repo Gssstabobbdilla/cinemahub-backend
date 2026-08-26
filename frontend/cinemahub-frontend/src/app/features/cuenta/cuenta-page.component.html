@@ -1,12 +1,5 @@
 <h2>Mi cuenta</h2>
 
-<div class="user-picker">
-  <label>
-    ID de usuario (temporal, hasta que haya login)
-    <input type="number" [value]="userIdInput() ?? ''" (input)="onUserIdInputChange($event)" />
-  </label>
-  <button type="button" (click)="loadAccount()">Cargar cuenta</button>
-</div>
 
 @if (loading()) {
   <p>Cargando cuenta…</p>
@@ -19,20 +12,22 @@
   <section class="profile">
     <h3>Perfil</h3>
 
-    @if (!editingProfile()) {
-      <p>{{ u.firstName }} {{ u.lastName }} — {{ u.email }}</p>
-      <p class="meta">Teléfono: {{ u.phone || 'sin registrar' }} · Estado: {{ u.status }}</p>
-      <button type="button" (click)="startEditProfile()">Editar perfil</button>
-    } @else {
-      <div class="profile-form">
-        <label>Nombre <input type="text" [value]="profileFirstName()" (input)="onFirstNameChange($event)" /></label>
-        <label>Apellido <input type="text" [value]="profileLastName()" (input)="onLastNameChange($event)" /></label>
-        <label>Teléfono <input type="text" [value]="profilePhone()" (input)="onPhoneChange($event)" /></label>
-        <button type="button" [disabled]="savingProfile()" (click)="saveProfile()">
-          {{ savingProfile() ? 'Guardando…' : 'Guardar' }}
-        </button>
-      </div>
-    }
+      @if (!editingProfile()) {
+        <div class="profile-content">
+          <p><strong>{{ u.firstName }} {{ u.lastName }}</strong> — {{ u.email }}</p>
+          <p class="meta">Teléfono: {{ u.phone || 'sin registrar' }} · Estado: {{ u.status }}</p>
+          <button type="button" (click)="startEditProfile()">Editar perfil</button>
+        </div>
+      } @else {
+        <div class="profile-form">
+          <label>Nombre <input type="text" [value]="profileFirstName()" (input)="onFirstNameChange($event)" /></label>
+          <label>Apellido <input type="text" [value]="profileLastName()" (input)="onLastNameChange($event)" /></label>
+          <label>Teléfono <input type="text" [value]="profilePhone()" (input)="onPhoneChange($event)" /></label>
+          <button type="button" [disabled]="savingProfile()" (click)="saveProfile()">
+            {{ savingProfile() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      }
   </section>
 
   <section class="reservations">

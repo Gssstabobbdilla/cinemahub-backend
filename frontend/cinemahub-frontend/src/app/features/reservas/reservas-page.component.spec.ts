@@ -12,7 +12,6 @@ import { ReservasPageComponent } from './reservas-page.component';
 
 describe('ReservasPageComponent', () => {
   let fixture: ComponentFixture<ReservasPageComponent>;
-  let currentUserService: CurrentUserService;
 
   let showtimeServiceSpy: {
     findById: ReturnType<typeof vi.fn>;
@@ -21,6 +20,10 @@ describe('ReservasPageComponent', () => {
   let reservationServiceSpy: {
     findShowtimeSeats: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
+  };
+
+  let currentUserServiceSpy: {
+    userId: ReturnType<typeof vi.fn>;
   };
 
   let routerSpy: {
@@ -44,86 +47,43 @@ describe('ReservasPageComponent', () => {
   };
 
   const showtimeSeats: ShowtimeSeat[] = [
-    {
-      seatId: 1,
-      rowLabel: 'A',
-      seatNumber: 1,
-      seatType: 'STANDARD',
-      taken: true
-    },
-    {
-      seatId: 2,
-      rowLabel: 'A',
-      seatNumber: 2,
-      seatType: 'STANDARD',
-      taken: false
-    }
+    { seatId: 1, rowLabel: 'A', seatNumber: 1, seatType: 'STANDARD', taken: true },
+    { seatId: 2, rowLabel: 'A', seatNumber: 2, seatType: 'STANDARD', taken: false }
   ];
 
   beforeEach(() => {
-    showtimeServiceSpy = {
-      findById: vi.fn()
-    };
-
-    reservationServiceSpy = {
-      findShowtimeSeats: vi.fn(),
-      create: vi.fn()
-    };
-
-    routerSpy = {
-      navigate: vi.fn()
-    };
+    showtimeServiceSpy = { findById: vi.fn() };
+    reservationServiceSpy = { findShowtimeSeats: vi.fn(), create: vi.fn() };
+    currentUserServiceSpy = { userId: vi.fn() };
+    routerSpy = { navigate: vi.fn() };
 
     showtimeServiceSpy.findById.mockReturnValue(of(showtime));
     reservationServiceSpy.findShowtimeSeats.mockReturnValue(of(showtimeSeats));
+    currentUserServiceSpy.userId.mockReturnValue(1); // authGuard garantiza sesión antes de llegar acá
 
     TestBed.configureTestingModule({
       imports: [ReservasPageComponent],
       providers: [
-        {
-          provide: ShowtimeService,
-          useValue: showtimeServiceSpy
-        },
-        {
-          provide: ReservationService,
-          useValue: reservationServiceSpy
-        },
-        {
-          provide: Router,
-          useValue: routerSpy
-        },
+        { provide: ShowtimeService, useValue: showtimeServiceSpy },
+        { provide: ReservationService, useValue: reservationServiceSpy },
+        { provide: CurrentUserService, useValue: currentUserServiceSpy },
+        { provide: Router, useValue: routerSpy },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({
-                showtimeId: '10'
-              })
-            }
-          }
+          useValue: { snapshot: { paramMap: convertToParamMap({ showtimeId: '10' }) } }
         }
-        // CurrentUserService: instancia real (providedIn: 'root'), sin mock.
       ]
     });
 
-    currentUserService = TestBed.inject(CurrentUserService);
     fixture = TestBed.createComponent(ReservasPageComponent);
   });
 
   it('mapea ShowtimeSeat a Seat y separa los IDs ya tomados', () => {
     fixture.detectChanges();
 
-    expect(
-      fixture.componentInstance.seats().map(s => s.id)
-    ).toEqual([1, 2]);
-
-    expect(
-      fixture.componentInstance.takenSeatIds()
-    ).toEqual([1]);
-
-    expect(
-      fixture.componentInstance.loading()
-    ).toBe(false);
+    expect(fixture.componentInstance.seats().map(s => s.id)).toEqual([1, 2]);
+    expect(fixture.componentInstance.takenSeatIds()).toEqual([1]);
+    expect(fixture.componentInstance.loading()).toBe(false);
   });
 
   it('onSelectionChange actualiza selectedSeatIds y el total calculado', () => {
@@ -131,34 +91,26 @@ describe('ReservasPageComponent', () => {
 
     fixture.componentInstance.onSelectionChange([2]);
 
-    expect(
-      fixture.componentInstance.selectedSeatIds()
-    ).toEqual([2]);
-
-    expect(
-      fixture.componentInstance.total()
-    ).toBe(25);
+    expect(fixture.componentInstance.selectedSeatIds()).toEqual([2]);
+    expect(fixture.componentInstance.total()).toBe(25);
   });
 
-  it('userId proviene de CurrentUserService (compartido con cuenta)', () => {
+  it('userId proviene de CurrentUserService (ya no de un input manual)', () => {
     fixture.detectChanges();
 
-    currentUserService.setUserId(7);
-
-    expect(fixture.componentInstance.userId()).toBe(7);
+    expect(fixture.componentInstance.userId()).toBe(1);
+    expect(currentUserServiceSpy.userId).toHaveBeenCalled();
   });
 
-  it('confirmReservation no hace nada sin userId ni asientos seleccionados', () => {
+  it('confirmReservation no hace nada sin asientos seleccionados', () => {
     fixture.detectChanges();
 
     fixture.componentInstance.confirmReservation();
 
-    expect(
-      reservationServiceSpy.create
-    ).not.toHaveBeenCalled();
+    expect(reservationServiceSpy.create).not.toHaveBeenCalled();
   });
 
-  it('confirmReservation crea la reserva y navega a checkout', () => {
+  it('confirmReservation crea la reserva con el userId de la sesión y navega a checkout', () => {
     const reservation: Reservation = {
       id: 50,
       userId: 1,
@@ -170,46 +122,29 @@ describe('ReservasPageComponent', () => {
     reservationServiceSpy.create.mockReturnValue(of(reservation));
 
     fixture.detectChanges();
-
-    currentUserService.setUserId(1);
     fixture.componentInstance.onSelectionChange([2]);
 
     fixture.componentInstance.confirmReservation();
 
-    expect(
-      reservationServiceSpy.create
-    ).toHaveBeenCalledWith({
+    expect(reservationServiceSpy.create).toHaveBeenCalledWith({
       userId: 1,
       showtimeId: 10,
       seatIds: [2]
     });
-
-    expect(
-      routerSpy.navigate
-    ).toHaveBeenCalledWith(['/checkout', 50]);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/checkout', 50]);
   });
 
   it('confirmReservation setea error() cuando el asiento ya fue tomado (409)', () => {
     reservationServiceSpy.create.mockReturnValue(
-      throwError(() => ({
-        status: 409,
-        message: 'Ya existe una reserva con ese asiento'
-      }))
+      throwError(() => ({ status: 409, message: 'Ya existe una reserva con ese asiento' }))
     );
 
     fixture.detectChanges();
-
-    currentUserService.setUserId(1);
     fixture.componentInstance.onSelectionChange([2]);
 
     fixture.componentInstance.confirmReservation();
 
-    expect(
-      fixture.componentInstance.error()
-    ).toBe('Ya existe una reserva con ese asiento');
-
-    expect(
-      fixture.componentInstance.submitting()
-    ).toBe(false);
+    expect(fixture.componentInstance.error()).toBe('Ya existe una reserva con ese asiento');
+    expect(fixture.componentInstance.submitting()).toBe(false);
   });
 });

@@ -25,7 +25,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
 @WebMvcTest(MovieController.class)
+@AutoConfigureMockMvc(addFilters = false)
+
 class MovieControllerTest {
 
     @Autowired
@@ -36,6 +41,9 @@ class MovieControllerTest {
 
     @MockitoBean
     private MovieService movieService;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     @Test
     void createReturns201WithValidRequest() throws Exception {

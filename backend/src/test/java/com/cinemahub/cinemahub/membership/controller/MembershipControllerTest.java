@@ -23,6 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
+@AutoConfigureMockMvc(addFilters = false)
+
 @WebMvcTest(MembershipController.class)
 class MembershipControllerTest {
 
@@ -34,6 +39,9 @@ class MembershipControllerTest {
 
     @MockitoBean
     private MembershipService membershipService;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     private User user() {
         User user = new User("Sofia", "Test", "sofia@cinemahub.local", "hash");

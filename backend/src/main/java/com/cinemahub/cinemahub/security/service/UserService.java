@@ -13,7 +13,7 @@ import com.cinemahub.cinemahub.security.repository.UserRoleRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 @Service
@@ -23,15 +23,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
                         RoleRepository roleRepository,
-                        UserRoleRepository userRoleRepository) {
+                        UserRoleRepository userRoleRepository,
+                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
-
     public List<User> findAll() {
         return userRepository.findAll();
     }
@@ -46,16 +48,20 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User no encontrado con email: " + email));
     }
 
-    @Transactional
+   @Transactional
     public User register(String firstName, String lastName, String email, String rawPassword) {
         if (userRepository.existsByEmail(email)) {
             throw DuplicateResourceException.of("un usuario", "email", email);
         }
-        // TODO: reemplazar por hash real (BCrypt) cuando se agregue Spring Security.
-        // Guardar la contraseña en texto plano es solo un placeholder para poder
-        // avanzar con el resto de las capas; no usar así en ningún ambiente real.
-        User user = new User(firstName, lastName, email, rawPassword);
-        return userRepository.save(user);
+        User user = new User(firstName, lastName, email, passwordEncoder.encode(rawPassword));
+        User saved = userRepository.save(user);
+
+        // Todo usuario nuevo arranca con ROLE_USER; ROLE_ADMIN se asigna manualmente
+        // (vía POST /api/users/{id}/roles, ya protegido para admins).
+        roleRepository.findByName("ROLE_USER").ifPresent(role ->
+                userRoleRepository.save(new UserRole(saved, role)));
+
+        return saved;
     }
 
     @Transactional

@@ -27,7 +27,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
 @WebMvcTest(CouponController.class)
+@AutoConfigureMockMvc(addFilters = false)
+
 class CouponControllerTest {
 
     @Autowired
@@ -39,6 +44,9 @@ class CouponControllerTest {
     @MockitoBean
     private CouponService couponService;
 
+    @MockitoBean
+    private JwtService jwtService;
+    
     private Promotion promotion() {
         Promotion promotion = new Promotion(
                 "Descuento estudiantes", new BigDecimal("20.00"), LocalDate.now(), LocalDate.now().plusMonths(1));

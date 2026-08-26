@@ -72,11 +72,6 @@ export class ReservasPageComponent implements OnInit {
     });
   }
 
-  onUserIdChange(event: Event): void {
-    const value = (event.target as HTMLInputElement).valueAsNumber;
-    this.currentUser.setUserId(Number.isNaN(value) ? null : value);
-  }
-
   onSelectionChange(seatIds: number[]): void {
     this.selectedSeatIds.set(seatIds);
   }

@@ -23,10 +23,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
+@WebMvcTest(PaymentController.class)
+@AutoConfigureMockMvc(addFilters = false)
+
 // PaymentController no recibe ningún @RequestBody (todos sus endpoints son GET o POST sin
 // body), así que no hay caso de "validación rechaza" que probar aquí — se reemplaza por un
 // tercer caso (refund) que sigue siendo comportamiento real del controller.
-@WebMvcTest(PaymentController.class)
 class PaymentControllerTest {
 
     @Autowired
@@ -35,6 +40,9 @@ class PaymentControllerTest {
     @MockitoBean
     private PaymentService paymentService;
 
+    @MockitoBean
+    private JwtService jwtService;
+    
     private Payment payment(PaymentStatus status) {
         User user = new User("Nico", "Test", "nico@cinemahub.local", "hash");
         Reservation reservation = new Reservation(user, OffsetDateTime.now().plusMinutes(10));

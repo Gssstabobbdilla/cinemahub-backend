@@ -26,8 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
 
 @WebMvcTest(ProductController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ProductControllerTest {
 
     @Autowired
@@ -39,6 +42,9 @@ class ProductControllerTest {
     @MockitoBean
     private ProductService productService;
 
+    @MockitoBean
+    private JwtService jwtService;
+    
     @Test
     void createReturns201WithValidRequest() throws Exception {
         String imageUrl = "https://www.google.com/imgres?q=nachos&imgurl=https%3A%2F%2Fassets.tmecosys.com%2Fimage%2Fupload%2Ft_web_rdp_recipe_584x480%2Fimg%2Frecipe%2Fras%2FAssets%2F7695121e-8b9a-4d00-ab96-4430e47266ba%2FDerivates%2F445ffdd9-9a8e-48fa-9e86-84c1e94469ca.jpg&imgrefurl=https%3A%2F%2Fcookidoo.mx%2Frecipes%2Frecipe%2Fes-MX%2Fr735813&docid=r7jhZCpXS-AuaM&tbnid=CI4CR_bYBB75DM&vet=12ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA..i&w=584&h=480&hcb=2&ved=2ahUKEwjr_4TXnrCWAxUpPbkGHcw8PX4QnPAOegQINRAA";

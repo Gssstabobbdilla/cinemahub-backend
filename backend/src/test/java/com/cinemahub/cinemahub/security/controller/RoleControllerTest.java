@@ -21,7 +21,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
 @WebMvcTest(RoleController.class)
+@AutoConfigureMockMvc(addFilters = false)
+
 class RoleControllerTest {
 
     @Autowired
@@ -29,6 +34,9 @@ class RoleControllerTest {
 
     @Autowired
     private JsonMapper objectMapper;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     @MockitoBean
     private RoleService roleService;

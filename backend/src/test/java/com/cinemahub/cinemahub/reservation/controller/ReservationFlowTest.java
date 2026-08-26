@@ -35,6 +35,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import com.cinemahub.cinemahub.security.jwt.JwtService;
+
+@AutoConfigureMockMvc(addFilters = false)
+
 /**
  * La pieza de lógica más crítica del proyecto: evitar que dos personas reserven el mismo
  * asiento para la misma función. Corre con rollback automático por test.
