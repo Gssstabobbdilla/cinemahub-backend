@@ -190,7 +190,13 @@ export class CheckoutPageComponent implements OnInit {
     this.orderService.cancel(order.id).subscribe({
       next: updated => {
         this.order.set(updated);
-        this.cancelling.set(false);
+        this.reservationService.cancel(this.reservationId).subscribe({
+        next: () => this.cancelling.set(false),
+        error: (err: AppError) => {
+          this.error.set(err.message);
+          this.cancelling.set(false);
+          }
+        });
       },
       error: (err: AppError) => {
         this.error.set(err.message);

@@ -138,9 +138,16 @@ describe('CuentaPageComponent', () => {
 
   it('createMembership crea la membresía usando el userId de la sesión', () => {
     currentUserServiceSpy.userId.mockReturnValue(1);
+    
+    // Agrega esto para que ngOnInit no falle al cargar la cuenta inicial
+    userServiceSpy.findById.mockReturnValue(of(user));
+    reservationServiceSpy.findByUser.mockReturnValue(of([]));
+    membershipServiceSpy.findByUser.mockReturnValue(of(membership));
+    notificationServiceSpy.findByUser.mockReturnValue(of([]));
+
     membershipServiceSpy.createForUser.mockReturnValue(of(membership));
 
-    fixture.detectChanges();
+    fixture.detectChanges(); 
     fixture.componentInstance.createMembership();
 
     expect(membershipServiceSpy.createForUser).toHaveBeenCalledWith(1);

@@ -27,7 +27,7 @@ describe('CheckoutPageComponent', () => {
   };
 
   let productServiceSpy: { search: ReturnType<typeof vi.fn> };
-  let reservationServiceSpy: { findSeats: ReturnType<typeof vi.fn> };
+  let reservationServiceSpy: { findSeats: ReturnType<typeof vi.fn>, cancel: ReturnType<typeof vi.fn> };
   let routerSpy: { navigate: ReturnType<typeof vi.fn> };
 
   const order: Order = { id: 1, reservationId: 7, total: 50, status: 'PENDING', purchasedAt: null };
@@ -63,7 +63,7 @@ describe('CheckoutPageComponent', () => {
     };
 
     productServiceSpy = { search: vi.fn() };
-    reservationServiceSpy = { findSeats: vi.fn() };
+    reservationServiceSpy = { findSeats: vi.fn(), cancel: vi.fn() };
     routerSpy = { navigate: vi.fn() };
 
     reservationServiceSpy.findSeats.mockReturnValue(of(seats));
@@ -175,16 +175,18 @@ describe('CheckoutPageComponent', () => {
     expect(fixture.componentInstance.order()).toEqual(paidOrder);
   });
 
-  it('cancelOrder cancela la orden y actualiza su estado', () => {
+  it('cancelOrder cancela la orden Y la reserva subyacente para liberar los asientos', () => {
     orderServiceSpy.createFromReservation.mockReturnValue(of(order));
     fixture.detectChanges();
 
     const cancelledOrder: Order = { ...order, status: 'CANCELLED' };
     orderServiceSpy.cancel.mockReturnValue(of(cancelledOrder));
+    reservationServiceSpy.cancel = vi.fn().mockReturnValue(of({ id: 7, status: 'CANCELLED' }));
 
     fixture.componentInstance.cancelOrder();
 
     expect(orderServiceSpy.cancel).toHaveBeenCalledWith(1);
+    expect(reservationServiceSpy.cancel).toHaveBeenCalledWith(7);
     expect(fixture.componentInstance.order()).toEqual(cancelledOrder);
   });
 });
