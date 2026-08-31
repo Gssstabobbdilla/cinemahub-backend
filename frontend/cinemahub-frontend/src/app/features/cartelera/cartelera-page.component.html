@@ -1,15 +1,20 @@
-<h2>Cartelera</h2>
-
-@if (loading()) {
-  <p>Cargando películas…</p>
-} @else if (error()) {
-  <p class="error">{{ error() }}</p>
-} @else if (movies().length === 0) {
-  <p>No hay películas en cartelera por ahora.</p>
-} @else {
-  <div class="movie-grid">
-    @for (movie of movies(); track movie.id) {
-      <app-movie-card [movie]="movie" />
-    }
+<div class="cartelera-container">
+  <div class="header-section">
+    <h1>Películas en Cartelera</h1>
+    <p class="subtitle">Estás viendo películas disponibles</p>
   </div>
-}
+
+  @if (loading()) {
+    <div class="state-message">Cargando películas…</div>
+  } @else if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  } @else if (movies().length === 0) {
+    <div class="state-message">No hay películas en cartelera por ahora.</div>
+  } @else {
+    <div class="movie-grid">
+      @for (movie of movies(); track movie.id) {
+        <app-movie-card [movie]="movie" />
+      }
+    </div>
+  }
+</div>
