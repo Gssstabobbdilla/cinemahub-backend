@@ -4,10 +4,12 @@ import { AppError } from '../../core/interceptors/error.interceptor';
 import { MovementType, Product, ProductCategory } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product.service';
 import { ProductCategoryService } from '../../core/services/productCategory.service';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-productos-page',
   standalone: true,
+  imports: [CommonModule, DecimalPipe],
   templateUrl: './productos-page.component.html',
   styleUrl: './productos-page.component.scss'
 })
