@@ -15,18 +15,19 @@ describe('AdminPageComponent', () => {
     fixture = TestBed.createComponent(AdminPageComponent);
   });
 
-  it('expone las 5 secciones de administración con path, label e icon', () => {
+  it('expone las 6 secciones de administración con path, label e icon', () => {
     fixture.detectChanges();
 
     const sections = fixture.componentInstance.sections;
 
-    expect(sections).toHaveLength(5);
+    expect(sections).toHaveLength(6);
     expect(sections.map(s => s.path)).toEqual([
       'productos',
       'peliculas',
       'cines',
       'funciones',
-      'promociones'
+      'promociones',
+      'pagos'
     ]);
     expect(sections.every(s => s.label && s.icon)).toBe(true);
   });
@@ -35,7 +36,7 @@ describe('AdminPageComponent', () => {
     fixture.detectChanges();
 
     const links = fixture.nativeElement.querySelectorAll('.nav-item');
-    expect(links.length).toBe(5);
+    expect(links.length).toBe(6);
   });
 
   it('renderiza el router-outlet dentro de admin-content', () => {

@@ -1,43 +1,81 @@
 <div class="login-wrapper">
   <div class="login-card">
-    <h2>CinemaHub</h2>
-
-    <div class="mode-tabs">
-      <button type="button" class="tab" [class.active]="mode() === 'login'" (click)="setMode('login')">
-        Iniciar sesión
-      </button>
-      <button type="button" class="tab" [class.active]="mode() === 'register'" (click)="setMode('register')">
-        Crear cuenta
-      </button>
+    <div class="card-header">
+      <span class="brand-subtitle">CINEMAHUB</span>
+      <h2>{{ mode() === 'login' ? '¡HOLA! QUÉ BUENO VERTE POR ACÁ.' : 'CREA TU CUENTA' }}</h2>
     </div>
 
     @if (error()) {
-      <p class="error">{{ error() }}</p>
+      <div class="error-banner">{{ error() }}</div>
     }
 
     @if (mode() === 'register') {
-      <label>
-        Nombre
-        <input type="text" [value]="firstName()" (input)="onFirstNameChange($event)" />
-      </label>
-      <label>
-        Apellido
-        <input type="text" [value]="lastName()" (input)="onLastNameChange($event)" />
-      </label>
+      <div class="input-group">
+        <label for="firstName">Nombre*</label>
+        <input 
+          id="firstName"
+          type="text" 
+          placeholder="Tu nombre"
+          [value]="firstName()" 
+          (input)="onFirstNameChange($event)" 
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="lastName">Apellido*</label>
+        <input 
+          id="lastName"
+          type="text" 
+          placeholder="Tu apellido"
+          [value]="lastName()" 
+          (input)="onLastNameChange($event)" 
+        />
+      </div>
     }
 
-    <label>
-      Email
-      <input type="email" [value]="email()" (input)="onEmailChange($event)" />
-    </label>
+    <div class="input-group">
+      <label for="email">Correo electrónico*</label>
+      <input 
+        id="email"
+        type="email" 
+        placeholder="correo@ejemplo.com"
+        [value]="email()" 
+        (input)="onEmailChange($event)" 
+      />
+    </div>
 
-    <label>
-      Contraseña
-      <input type="password" [value]="password()" (input)="onPasswordChange($event)" />
-    </label>
+    <div class="input-group">
+      <label for="password">Contraseña*</label>
+      <input 
+        id="password"
+        type="password" 
+        placeholder="••••••••"
+        [value]="password()" 
+        (input)="onPasswordChange($event)" 
+      />
+    </div>
 
-    <button type="button" class="btn-primary" [disabled]="loading()" (click)="submit()">
-      {{ loading() ? 'Procesando…' : (mode() === 'login' ? 'Ingresar' : 'Crear cuenta') }}
-    </button>
+    @if (mode() === 'login') {
+      <div class="forgot-password">
+        <a href="javascript:void(0);">Olvidé mi contraseña</a>
+      </div>
+    }
+
+    <div class="actions">
+      <button 
+        type="button" 
+        class="btn-primary" 
+        [disabled]="loading()" 
+        (click)="submit()">
+        {{ loading() ? 'PROCESANDO…' : (mode() === 'login' ? 'INICIAR SESIÓN' : 'REGISTRARSE') }}
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-secondary" 
+        (click)="setMode(mode() === 'login' ? 'register' : 'login')">
+        {{ mode() === 'login' ? 'CREAR CUENTA' : 'YA TENGO UNA CUENTA' }}
+      </button>
+    </div>
   </div>
 </div>

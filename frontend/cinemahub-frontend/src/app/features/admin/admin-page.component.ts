@@ -14,6 +14,7 @@ export class AdminPageComponent {
     { path: 'peliculas', label: 'Películas', icon: '🎬' },
     { path: 'cines', label: 'Cines y salas', icon: '🏢' },
     { path: 'funciones', label: 'Funciones', icon: '🕐' },
-    { path: 'promociones', label: 'Promociones', icon: '🏷️' }
+    { path: 'promociones', label: 'Promociones', icon: '🏷️' },
+    { path: 'pagos', label: 'Pagos', icon: '💳' }
   ];
 }
