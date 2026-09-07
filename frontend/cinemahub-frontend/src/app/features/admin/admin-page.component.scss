@@ -6,7 +6,7 @@
 }
 
 .admin-sidebar {
-  background: #1a1c2e;
+  background: #111827; // Tono oscuro neutro y profundo alineado a la estética
   color: #fff;
   padding: 1.5rem 1rem;
   border-radius: 12px 0 0 12px;
@@ -14,6 +14,7 @@
 
 .admin-brand {
   font-size: 1.1rem;
+  font-weight: 600;
   margin: 0 0 1.5rem 0.5rem;
   color: #fff;
 }
@@ -30,9 +31,10 @@ nav {
   gap: 0.6rem;
   padding: 0.65rem 0.75rem;
   border-radius: 8px;
-  color: #b8bacc;
+  color: #9ca3af;
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 500;
   transition: background 0.15s ease, color 0.15s ease;
 
   .icon {
@@ -40,18 +42,18 @@ nav {
   }
 
   &:hover {
-    background: #262940;
+    background: #1f2937;
     color: #fff;
   }
 
   &.active {
-    background: #3f51b5;
+    background: #dc2626; // Rojo activo consistente con los botones principales
     color: #fff;
   }
 }
 
 .admin-content {
-  background: #fafafa;
+  background: #f9fafb;
   padding: 2rem;
   border-radius: 0 12px 12px 0;
   overflow-x: auto;

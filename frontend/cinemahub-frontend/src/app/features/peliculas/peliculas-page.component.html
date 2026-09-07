@@ -41,8 +41,8 @@
                     <option [value]="genre.id">{{ genre.name }}</option>
                   }
                 </select>
-                <button type="button" (click)="confirmAddGenre(movie.id)">✓</button>
-                <button type="button" (click)="cancelAddGenre()">×</button>
+                <button type="button" class="btn-inline-check" (click)="confirmAddGenre(movie.id)">✓</button>
+                <button type="button" class="btn-inline-close" (click)="cancelAddGenre()">×</button>
               </span>
             } @else {
               <button type="button" class="genre-chip add" (click)="startAddGenre(movie.id)">+ género</button>
@@ -77,12 +77,12 @@
 
       <label>
         Título
-        <input type="text" [value]="formTitle()" (input)="onTitleChange($event)" />
+        <input type="text" [value]="formTitle()" (input)="onTitleChange($event)" placeholder="Ej. Interestellar" />
       </label>
 
       <label>
         Duración (min)
-        <input type="number" [value]="formDuration() ?? ''" (input)="onDurationChange($event)" />
+        <input type="number" [value]="formDuration() ?? ''" (input)="onDurationChange($event)" placeholder="Ej. 169" />
       </label>
 
       <label>
@@ -97,7 +97,7 @@
       @if (editingMovie()) {
         <label>
           Sinopsis
-          <textarea [value]="formSynopsis()" (input)="onSynopsisChange($event)"></textarea>
+          <textarea [value]="formSynopsis()" (input)="onSynopsisChange($event)" placeholder="Sinopsis de la película..."></textarea>
         </label>
 
         <label>
