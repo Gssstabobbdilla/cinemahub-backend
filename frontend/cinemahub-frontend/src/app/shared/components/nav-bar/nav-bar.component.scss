@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-bar {
+  background: #0a0a0a;
+  border-bottom: 3px solid #da0812;
+}
+
+.nav-bar__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 64px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  text-decoration: none;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+
+  &__cinema { color: #fff; }
+  &__hub { color: #da0812; }
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  &__item {
+    color: #d9d9d9;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.1rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    &:hover { color: #fff; }
+
+    &.active {
+      color: #fff;
+      border-color: #da0812;
+    }
+  }
+}
+
+.links--mobile { display: none; }
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  span {
+    display: block;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  &.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  &.open span:nth-child(2) { opacity: 0; }
+  &.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+}
+
+@media (max-width: 720px) {
+  .links--desktop { display: none; }
+  .menu-toggle { display: flex; }
+
+  .links--mobile {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1.5rem 1rem;
+    background: #0a0a0a;
+    border-top: 1px solid #262626;
+
+    .links__item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #1f1f1f;
+
+      &.active { border-color: #da0812; }
+    }
+  }
+}

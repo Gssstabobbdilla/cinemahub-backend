@@ -1,0 +1,44 @@
+<header class="nav-bar">
+  <div class="nav-bar__inner">
+    <a class="brand" routerLink="/cartelera" (click)="closeMobileMenu()">
+      <span class="brand__cinema">CINEMA</span><span class="brand__hub">HUB</span>
+    </a>
+
+    <nav class="links links--desktop">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="links__item">
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      [class.open]="mobileMenuOpen()"
+      (click)="toggleMobileMenu()"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      aria-label="Abrir menú de navegación"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  @if (mobileMenuOpen()) {
+    <nav class="links links--mobile">
+    
+      @for (item of navItems; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          class="links__item"
+          (click)="closeMobileMenu()"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  }
+</header>

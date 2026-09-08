@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #dc2626, transparent);
+  background: linear-gradient(90deg, transparent, #da0812, transparent);
   background-size: 200% 100%;
   animation: loading-sweep 1s linear infinite;
   z-index: 1000;
@@ -98,7 +98,8 @@ main {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f9fafb;
+  width: 100%;
+  background-color:#121212;
   min-height: calc(100vh - 73px);
 }
 

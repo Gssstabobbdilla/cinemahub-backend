@@ -10,6 +10,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    data: { hideNav: true },
     loadChildren: () => import('./features/login/login.routes').then(m => m.LOGIN_ROUTES)
 },
   {

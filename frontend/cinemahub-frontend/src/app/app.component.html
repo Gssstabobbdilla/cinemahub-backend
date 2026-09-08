@@ -2,17 +2,9 @@
   <div class="loading-bar"></div>
 }
 
-<header class="main-nav">
-  <span class="brand">CinemaHub</span>
-  <nav>
-    <a routerLink="/cartelera" routerLinkActive="active">Cartelera</a>
-    <a routerLink="/reservas" routerLinkActive="active">Reservas</a>
-    <!-- app.component.html: eliminar esta línea 
-    <a routerLink="/checkout" routerLinkActive="active">Checkout</a>-->
-    <a routerLink="/cuenta" routerLinkActive="active">Mi cuenta</a>
-    <a routerLink="/admin" routerLinkActive="active">Administración</a>
-  </nav>
-</header>
+@if (showNav()) {
+  <app-nav-bar />
+}
 
 <main>
   <router-outlet />
