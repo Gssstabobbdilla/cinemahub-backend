@@ -17,7 +17,7 @@ import com.cinemahub.cinemahub.reservation.entity.ReservationSeat;
 import com.cinemahub.cinemahub.reservation.repository.ReservationRepository;
 import com.cinemahub.cinemahub.reservation.repository.ReservationSeatRepository;
 import com.cinemahub.cinemahub.reservation.service.ReservationService;
-
+import com.cinemahub.cinemahub.order.entity.OrderProductId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
