@@ -99,8 +99,17 @@ public class OrderService {
             throw new IllegalStateException("Stock insuficiente para " + product.getName());
         }
 
-        OrderProduct orderProduct = orderProductRepository.save(
-                new OrderProduct(order, product, quantity, product.getPrice()));
+        // Si el producto ya estaba en la orden, sumamos a la cantidad existente en vez
+        // de reemplazarla — evita el bug de que agregar dos veces "resetee" la cantidad
+        // a la del último click mientras el total sigue acumulando por separado.
+        OrderProductId id = new OrderProductId(orderId, productId);
+        OrderProduct orderProduct = orderProductRepository.findById(id).orElse(null);
+
+        if (orderProduct != null) {
+            orderProduct.setQuantity(orderProduct.getQuantity() + quantity);
+        } else {
+            orderProduct = orderProductRepository.save(new OrderProduct(order, product, quantity, product.getPrice()));
+        }
 
         product.setStock(product.getStock() - quantity);
         order.setTotal(order.getTotal().add(product.getPrice().multiply(BigDecimal.valueOf(quantity))));

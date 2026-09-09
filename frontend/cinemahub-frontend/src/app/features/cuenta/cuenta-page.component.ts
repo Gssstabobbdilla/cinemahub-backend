@@ -11,6 +11,8 @@ import { MembershipService } from '../../core/services/membership.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { UserService } from '../../core/services/user.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-cuenta-page',
@@ -24,6 +26,8 @@ export class CuentaPageComponent implements OnInit {
   private membershipService = inject(MembershipService);
   private notificationService = inject(NotificationService);
   private currentUser = inject(CurrentUserService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   userId = this.currentUser.userId;
 
@@ -149,6 +153,11 @@ export class CuentaPageComponent implements OnInit {
           this.savingProfile.set(false);
         }
       });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   toggleReservationSeats(reservationId: number): void {

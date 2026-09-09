@@ -1,116 +1,149 @@
-<h2>Mi cuenta</h2>
+<div class="cuenta-page">
+  <header class="page-header">
+    <h1 class="page-title">Mi cuenta</h1>
+    <button type="button" class="btn-logout" (click)="logout()">Cerrar sesión</button>
+  </header>
 
+  @if (loading()) {
+    <p class="status-message">Cargando cuenta…</p>
+  }
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
 
-@if (loading()) {
-  <p>Cargando cuenta…</p>
-}
-@if (error()) {
-  <p class="error">{{ error() }}</p>
-}
-
-@if (user(); as u) {
-  <section class="profile">
-    <h3>Perfil</h3>
-
-      @if (!editingProfile()) {
-        <div class="profile-content">
-          <p><strong>{{ u.firstName }} {{ u.lastName }}</strong> — {{ u.email }}</p>
-          <p class="meta">Teléfono: {{ u.phone || 'sin registrar' }} · Estado: {{ u.status }}</p>
-          <button type="button" (click)="startEditProfile()">Editar perfil</button>
-        </div>
-      } @else {
-        <div class="profile-form">
-          <label>Nombre <input type="text" [value]="profileFirstName()" (input)="onFirstNameChange($event)" /></label>
-          <label>Apellido <input type="text" [value]="profileLastName()" (input)="onLastNameChange($event)" /></label>
-          <label>Teléfono <input type="text" [value]="profilePhone()" (input)="onPhoneChange($event)" /></label>
-          <button type="button" [disabled]="savingProfile()" (click)="saveProfile()">
-            {{ savingProfile() ? 'Guardando…' : 'Guardar' }}
-          </button>
-        </div>
-      }
-  </section>
-
-  <section class="reservations">
-    <h3>Historial de reservas</h3>
-
-    @if (reservations().length === 0) {
-      <p>Todavía no tenés reservas.</p>
-    } @else {
-      <ul>
-        @for (r of reservations(); track r.id) {
-          <li>
-            <button type="button" class="reservation-toggle" (click)="toggleReservationSeats(r.id)">
-              Reserva #{{ r.id }} — {{ r.status }} ({{ r.createdAt }})
+  @if (user(); as u) {
+    <section class="panel">
+      <header class="panel__header">Perfil</header>
+      <div class="panel__body">
+        @if (!editingProfile()) {
+          <div class="profile-content">
+            <p class="profile-name">{{ u.firstName }} {{ u.lastName }}</p>
+            <p class="meta">{{ u.email }}</p>
+            <p class="meta">Teléfono: {{ u.phone || 'sin registrar' }}</p>
+            <span class="status-tag" [class.status-active]="u.status === 'ACTIVE'">{{ u.status }}</span>
+            <button type="button" class="btn-secondary" (click)="startEditProfile()">Editar perfil</button>
+          </div>
+        } @else {
+          <div class="profile-form">
+            <label>
+              Nombre
+              <input type="text" [value]="profileFirstName()" (input)="onFirstNameChange($event)" />
+            </label>
+            <label>
+              Apellido
+              <input type="text" [value]="profileLastName()" (input)="onLastNameChange($event)" />
+            </label>
+            <label>
+              Teléfono
+              <input type="text" [value]="profilePhone()" (input)="onPhoneChange($event)" />
+            </label>
+            <button type="button" class="btn-primary" [disabled]="savingProfile()" (click)="saveProfile()">
+              {{ savingProfile() ? 'Guardando…' : 'Guardar cambios' }}
             </button>
+          </div>
+        }
+      </div>
+    </section>
 
-            @if (expandedReservationId() === r.id) {
-              <ul class="seat-list">
-                @for (seat of getSeatsFor(r.id); track seat.seatId) {
-                  <li>{{ seat.rowLabel }}{{ seat.seatNumber }} — S/ {{ seat.price }}</li>
-                } @empty {
-                  <li>Sin asientos.</li>
+    <section class="panel">
+      <header class="panel__header">Historial de reservas</header>
+      <div class="panel__body">
+        @if (reservations().length === 0) {
+          <p class="empty">Todavía no tenés reservas.</p>
+        } @else {
+          <ul class="reservation-list">
+            @for (r of reservations(); track r.id) {
+              <li class="reservation-item">
+                <button type="button" class="reservation-toggle" (click)="toggleReservationSeats(r.id)">
+                  <span class="reservation-id">Reserva #{{ r.id }}</span>
+                  <span class="status-tag" [class]="'status-' + r.status.toLowerCase()">{{ r.status }}</span>
+                  <span class="reservation-date">{{ r.createdAt }}</span>
+                </button>
+
+                @if (expandedReservationId() === r.id) {
+                  <ul class="seat-list">
+                    @for (seat of getSeatsFor(r.id); track seat.seatId) {
+                      <li>{{ seat.rowLabel }}{{ seat.seatNumber }} — S/ {{ seat.price }}</li>
+                    } @empty {
+                      <li>Sin asientos.</li>
+                    }
+                  </ul>
                 }
-              </ul>
+              </li>
             }
-          </li>
+          </ul>
         }
-      </ul>
-    }
-  </section>
+      </div>
+    </section>
 
-  <section class="membership">
-    <h3>Membresía</h3>
+    <section class="panel">
+      <header class="panel__header">Membresía</header>
+      <div class="panel__body">
+        @if (membership(); as m) {
+          <div class="membership-summary" [class]="'tier-' + m.level.toLowerCase()">
+            <span class="membership-level">{{ m.level }}</span>
+            <span class="membership-points">{{ m.points }} pts</span>
+          </div>
 
-    @if (membership(); as m) {
-      <p>Nivel: <strong>{{ m.level }}</strong> · Puntos: {{ m.points }}</p>
-      <button type="button" (click)="toggleMembershipHistory()">
-        {{ showMembershipHistory() ? 'Ocultar historial' : 'Ver historial de puntos' }}
-      </button>
+          <button type="button" class="btn-secondary" (click)="toggleMembershipHistory()">
+            {{ showMembershipHistory() ? 'Ocultar historial' : 'Ver historial de puntos' }}
+          </button>
 
-      @if (showMembershipHistory()) {
-        <ul>
-          @for (h of membershipHistory(); track h.id) {
-            <li>{{ h.points > 0 ? '+' : '' }}{{ h.points }} — {{ h.reason || 'sin motivo' }} ({{ h.createdAt }})</li>
-          } @empty {
-            <li>Sin movimientos todavía.</li>
+          @if (showMembershipHistory()) {
+            <ul class="history-list">
+              @for (h of membershipHistory(); track h.id) {
+                <li>
+                  <span class="history-points" [class.negative]="h.points < 0">
+                    {{ h.points > 0 ? '+' : '' }}{{ h.points }}
+                  </span>
+                  <span class="history-reason">{{ h.reason || 'sin motivo' }}</span>
+                  <span class="history-date">{{ h.createdAt }}</span>
+                </li>
+              } @empty {
+                <li class="history-empty">Sin movimientos todavía.</li>
+              }
+            </ul>
           }
-        </ul>
-      }
-    } @else if (membershipNotFound()) {
-      <p>Todavía no tenés membresía.</p>
-      <button type="button" [disabled]="creatingMembership()" (click)="createMembership()">
-        {{ creatingMembership() ? 'Creando…' : 'Crear membresía' }}
-      </button>
-    }
-  </section>
-
-  <section class="notifications">
-    <h3>Notificaciones</h3>
-
-    <div class="notifications-header">
-      <label>
-        <input type="checkbox" [checked]="showOnlyUnread()" (change)="toggleUnreadOnly()" />
-        Solo no leídas
-      </label>
-      <button type="button" (click)="markAllAsRead()">Marcar todas como leídas</button>
-    </div>
-
-    @if (notifications().length === 0) {
-      <p>No hay notificaciones.</p>
-    } @else {
-      <ul>
-        @for (n of notifications(); track n.id) {
-          <li [class.unread]="!n.read">
-            <strong>{{ n.title }}</strong>
-            @if (n.message) {
-              <p>{{ n.message }}</p>
-            }
-            @if (!n.read) {
-              <button type="button" (click)="markAsRead(n.id)">Marcar como leída</button>
-            }
-          </li>
+        } @else if (membershipNotFound()) {
+          <p class="empty">Todavía no tenés membresía.</p>
+          <button type="button" class="btn-primary" [disabled]="creatingMembership()" (click)="createMembership()">
+            {{ creatingMembership() ? 'Creando…' : 'Crear membresía' }}
+          </button>
         }
-      </ul>
-    }
-  </section>
-}
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel__header">Notificaciones</header>
+      <div class="panel__body">
+        <div class="notifications-toolbar">
+          <label class="checkbox-label">
+            <input type="checkbox" [checked]="showOnlyUnread()" (change)="toggleUnreadOnly()" />
+            Solo no leídas
+          </label>
+          <button type="button" class="btn-link" (click)="markAllAsRead()">Marcar todas como leídas</button>
+        </div>
+
+        @if (notifications().length === 0) {
+          <p class="empty">No hay notificaciones.</p>
+        } @else {
+          <ul class="notification-list">
+            @for (n of notifications(); track n.id) {
+              <li class="notification-item" [class.unread]="!n.read">
+                <div class="notification-item__body">
+                  <strong>{{ n.title }}</strong>
+                  @if (n.message) {
+                    <p>{{ n.message }}</p>
+                  }
+                </div>
+                @if (!n.read) {
+                  <button type="button" class="btn-link" (click)="markAsRead(n.id)">Marcar como leída</button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </section>
+  }
+</div>

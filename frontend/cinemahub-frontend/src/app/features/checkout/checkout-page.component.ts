@@ -131,8 +131,12 @@ export class CheckoutPageComponent implements OnInit {
     this.addingProduct.set(true);
     this.error.set(null);
 
-    this.orderService.addProduct(order.id, { productId, quantity: this.quantityFor(productId) }).subscribe({
+    this.orderService.addProduct(order.id, { productId, quantity: 1}).subscribe({
       next: () => {
+        this.quantities.update(current => ({
+          ...current,
+          [productId]: (current[productId] ?? 0) + 1
+        }))
         this.loadOrderProducts(order.id);
         this.refreshOrder();
         this.addingProduct.set(false);
