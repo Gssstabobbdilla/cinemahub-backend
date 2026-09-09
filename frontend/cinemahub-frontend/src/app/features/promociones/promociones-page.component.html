@@ -1,106 +1,110 @@
-<div class="page-header">
-  <h2>Promociones</h2>
-  <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nueva promoción</button>
-</div>
+<div class="promociones-page">
+  <header class="page-header">
+    <h1 class="page-title">Promociones</h1>
+    <button type="button" class="btn-primary" (click)="openCreateForm()">+ Nueva promoción</button>
+  </header>
 
-@if (error()) {
-  <p class="error">{{ error() }}</p>
-}
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
 
-<div class="status-tabs">
-  <button
-    type="button"
-    class="tab"
-    [class.active]="statusFilter() === 'ACTIVE'"
-    (click)="setStatusFilter('ACTIVE')"
-  >
-    Activas
-  </button>
-  <button
-    type="button"
-    class="tab"
-    [class.active]="statusFilter() === 'INACTIVE'"
-    (click)="setStatusFilter('INACTIVE')"
-  >
-    Inactivas
-  </button>
-  <button
-    type="button"
-    class="tab"
-    [class.active]="statusFilter() === 'EXPIRED'"
-    (click)="setStatusFilter('EXPIRED')"
-  >
-    Expiradas
-  </button>
-</div>
-
-<div class="promo-layout">
-  <div class="promo-list">
-    @if (loading()) {
-      <p class="status-message">Cargando promociones…</p>
-    } @else if (promotions().length === 0) {
-      <p class="empty">No hay promociones en este estado.</p>
-    } @else {
-      @for (promo of promotions(); track promo.id) {
-        <div
-          class="promo-item"
-          [class.selected]="selectedPromotion()?.id === promo.id"
-          (click)="selectPromotion(promo)"
-        >
-          <div class="promo-info">
-            <h4>{{ promo.title }}</h4>
-            <p class="meta">{{ promo.discountPercentage }}% · {{ promo.startDate }} a {{ promo.endDate }}</p>
-          </div>
-
-          <select
-            class="status-select"
-            [value]="promo.status"
-            (click)="$event.stopPropagation()"
-            (change)="changeStatus(promo, $any($event.target).value)"
-          >
-            <option value="ACTIVE">Activa</option>
-            <option value="INACTIVE">Inactiva</option>
-            <option value="EXPIRED">Expirada</option>
-          </select>
-        </div>
-      }
-    }
+  <div class="status-tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.active]="statusFilter() === 'ACTIVE'"
+      (click)="setStatusFilter('ACTIVE')"
+    >
+      Activas
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.active]="statusFilter() === 'INACTIVE'"
+      (click)="setStatusFilter('INACTIVE')"
+    >
+      Inactivas
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.active]="statusFilter() === 'EXPIRED'"
+      (click)="setStatusFilter('EXPIRED')"
+    >
+      Expiradas
+    </button>
   </div>
 
-  <div class="coupons-panel">
-    @if (!selectedPromotion()) {
-      <p class="empty">Selecciona una promoción para ver sus cupones.</p>
-    } @else {
-      <div class="panel-header">
-        <h3>Cupones — {{ selectedPromotion()!.title }}</h3>
-        <button type="button" class="btn-primary" (click)="openCouponForm()">+ Generar cupón</button>
-      </div>
-
-      @if (loadingCoupons()) {
-        <p class="status-message">Cargando cupones…</p>
-      } @else if (coupons().length === 0) {
-        <p class="empty">Todavía no se generaron cupones para esta promoción.</p>
+  <div class="promo-layout">
+    <div class="promo-list">
+      @if (loading()) {
+        <p class="status-message">Cargando promociones…</p>
+      } @else if (promotions().length === 0) {
+        <p class="empty">No hay promociones en este estado.</p>
       } @else {
-        <div class="coupon-grid">
-          @for (coupon of coupons(); track coupon.id) {
-            <div class="coupon-card" [class.expired]="isExpired(coupon)">
-              <span class="coupon-code">{{ coupon.code }}</span>
-              <span class="coupon-discount">{{ coupon.discountPercentage }}% dscto.</span>
-              <span class="coupon-expiry">
-                {{ isExpired(coupon) ? 'Expiró' : 'Vence' }}: {{ coupon.expiresAt | slice:0:10 }}
-              </span>
+        @for (promo of promotions(); track promo.id) {
+          <div
+            class="promo-item"
+            [class.selected]="selectedPromotion()?.id === promo.id"
+            (click)="selectPromotion(promo)"
+          >
+            <div class="promo-item__info">
+              <h4>{{ promo.title }}</h4>
+              <p class="meta">{{ promo.discountPercentage }}% · {{ promo.startDate }} a {{ promo.endDate }}</p>
+            </div>
+
+            <select
+              class="status-select"
+              [value]="promo.status"
+              (click)="$event.stopPropagation()"
+              (change)="changeStatus(promo, $any($event.target).value)"
+            >
+              <option value="ACTIVE">Activa</option>
+              <option value="INACTIVE">Inactiva</option>
+              <option value="EXPIRED">Expirada</option>
+            </select>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="coupons-panel">
+      @if (!selectedPromotion()) {
+        <p class="empty empty--panel">Selecciona una promoción para ver sus cupones.</p>
+      } @else {
+        <header class="panel__header panel__header--split">
+          <span>Cupones — {{ selectedPromotion()!.title }}</span>
+          <button type="button" class="btn-primary btn-primary--sm" (click)="openCouponForm()">+ Generar cupón</button>
+        </header>
+
+        <div class="panel__body">
+          @if (loadingCoupons()) {
+            <p class="status-message">Cargando cupones…</p>
+          } @else if (coupons().length === 0) {
+            <p class="empty">Todavía no se generaron cupones para esta promoción.</p>
+          } @else {
+            <div class="coupon-grid">
+              @for (coupon of coupons(); track coupon.id) {
+                <div class="coupon-card" [class.expired]="isExpired(coupon)">
+                  <span class="coupon-code">{{ coupon.code }}</span>
+                  <span class="coupon-discount">{{ coupon.discountPercentage }}% dscto.</span>
+                  <span class="coupon-expiry">
+                    {{ isExpired(coupon) ? 'Expiró' : 'Vence' }}: {{ coupon.expiresAt | slice:0:10 }}
+                  </span>
+                </div>
+              }
             </div>
           }
         </div>
       }
-    }
+    </div>
   </div>
 </div>
 
 @if (showForm()) {
   <div class="modal-overlay" (click)="closeForm()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3>Nueva promoción</h3>
+      <h3 class="modal__title">Nueva promoción</h3>
 
       @if (error()) {
         <p class="error">{{ error() }}</p>
@@ -140,7 +144,7 @@
 @if (showCouponForm()) {
   <div class="modal-overlay" (click)="closeCouponForm()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3>Nuevo cupón</h3>
+      <h3 class="modal__title">Nuevo cupón</h3>
 
       @if (error()) {
         <p class="error">{{ error() }}</p>
