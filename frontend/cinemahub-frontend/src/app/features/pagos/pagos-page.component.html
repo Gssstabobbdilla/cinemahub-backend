@@ -1,77 +1,201 @@
-<div class="page-header">
-  <h2>Pagos</h2>
-</div>
+<div class="pagos-page">
+  <header class="page-header">
+    <h1 class="page-title">Pagos</h1>
+  </header>
 
-<div class="search-card">
-  <label>
-    ID de orden
-    <input type="number" [value]="searchOrderId() ?? ''" (input)="onSearchOrderIdChange($event)" />
-  </label>
-  <button type="button" class="btn-primary" [disabled]="searching()" (click)="search()">
-    {{ searching() ? 'Buscando…' : 'Buscar' }}
-  </button>
-</div>
-
-@if (error()) {
-  <p class="error">{{ error() }}</p>
-}
-
-@if (searched() && order(); as o) {
-  <section class="order-card">
-    <div class="order-summary">
-      <div>
-        <span class="label">Orden #{{ o.id }}</span>
-        <span class="order-status" [class]="'status-' + o.status.toLowerCase()">{{ o.status }}</span>
-      </div>
-      <div class="order-meta">
-        <span>Reserva #{{ o.reservationId }}</span>
-        <span>Total: S/ {{ o.total }}</span>
-      </div>
+  <!-- Búsqueda de orden -->
+  <section class="search-panel">
+    <div class="search-panel__header">
+      <span>Buscar pagos por orden</span>
     </div>
 
-    @if (payments().length === 0) {
-      <p class="empty">Esta orden todavía no tiene pagos registrados.</p>
-    } @else {
-      <div class="payment-table">
-        <div class="table-header">
-          <span>ID</span>
-          <span>Método</span>
-          <span>Código transacción</span>
-          <span>Monto</span>
-          <span>Estado</span>
-          <span>Fecha de pago</span>
-          <span></span>
-        </div>
+    <div class="search-panel__body">
+      <label class="search-field">
+        <span>ID de orden</span>
+        <input
+          type="number"
+          [value]="searchOrderId() ?? ''"
+          (input)="onSearchOrderIdChange($event)"
+          placeholder="Ej: 123"
+        />
+      </label>
 
-        @for (payment of payments(); track payment.id) {
-          <div class="table-row">
-            <span>#{{ payment.id }}</span>
-            <span>{{ payment.paymentMethod }}</span>
-            <span class="mono">{{ payment.transactionCode || '—' }}</span>
-            <span>S/ {{ payment.amount }}</span>
-            <span>
-              <span class="payment-status" [class]="'status-' + payment.status.toLowerCase()">
-                {{ statusLabel(payment.status) }}
-              </span>
-            </span>
-            <span>{{ payment.paidAt || '—' }}</span>
-            <span>
-              @if (payment.status === 'APPROVED') {
-                <button
-                  type="button"
-                  class="btn-danger"
-                  [disabled]="refundingId() === payment.id"
-                  (click)="refund(payment)"
-                >
-                  {{ refundingId() === payment.id ? 'Procesando…' : 'Reembolsar' }}
-                </button>
-              }
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="searching()"
+        (click)="search()"
+      >
+        {{ searching() ? 'Buscando…' : 'Buscar' }}
+      </button>
+    </div>
+  </section>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (searched() && order(); as o) {
+
+    <!-- Resumen de la orden -->
+    <section class="order-panel">
+      <header class="panel__header panel__header--split">
+        <span>Orden #{{ o.id }}</span>
+
+        <span
+          class="order-status"
+          [class]="'status-' + o.status.toLowerCase()"
+        >
+          {{ o.status }}
+        </span>
+      </header>
+
+      <div class="order-panel__body">
+        <div class="order-summary">
+          <div class="summary-item">
+            <span class="summary-item__label">Reserva</span>
+            <strong>#{{ o.reservationId }}</strong>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-item__label">Total de la orden</span>
+            <strong>S/ {{ o.total }}</strong>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-item__label">Estado</span>
+            <span
+              class="order-status"
+              [class]="'status-' + o.status.toLowerCase()"
+            >
+              {{ o.status }}
             </span>
           </div>
-        }
+        </div>
       </div>
-    }
-  </section>
-} @else if (searched()) {
-  <p class="empty">No se encontró ninguna orden con ese ID.</p>
-}
+    </section>
+
+    <!-- Pagos -->
+    <section class="payments-panel">
+      <header class="panel__header panel__header--split">
+        <span>Pagos registrados</span>
+
+        <span class="payment-count">
+          {{ payments().length }}
+          {{ payments().length === 1 ? 'pago' : 'pagos' }}
+        </span>
+      </header>
+
+      <div class="panel__body">
+
+        @if (payments().length === 0) {
+          <p class="empty empty--panel">
+            Esta orden todavía no tiene pagos registrados.
+          </p>
+        } @else {
+
+          <div class="payment-list">
+
+            @for (payment of payments(); track payment.id) {
+
+              <article class="payment-card">
+
+                <div class="payment-card__main">
+
+                  <div class="payment-card__header">
+                    <div>
+                      <span class="payment-id">
+                        Pago #{{ payment.id }}
+                      </span>
+
+                      <span class="payment-method">
+                        {{ payment.paymentMethod }}
+                      </span>
+                    </div>
+
+                    <span
+                      class="payment-status"
+                      [class]="'status-' + payment.status.toLowerCase()"
+                    >
+                      {{ statusLabel(payment.status) }}
+                    </span>
+                  </div>
+
+                  <div class="payment-card__details">
+
+                    <div class="payment-detail">
+                      <span class="payment-detail__label">
+                        Código de transacción
+                      </span>
+
+                      <span class="payment-detail__value mono">
+                        {{ payment.transactionCode || '—' }}
+                      </span>
+                    </div>
+
+                    <div class="payment-detail">
+                      <span class="payment-detail__label">
+                        Monto
+                      </span>
+
+                      <span class="payment-detail__value payment-amount">
+                        S/ {{ payment.amount }}
+                      </span>
+                    </div>
+
+                    <div class="payment-detail">
+                      <span class="payment-detail__label">
+                        Fecha de pago
+                      </span>
+
+                      <span class="payment-detail__value">
+                        {{ payment.paidAt || '—' }}
+                      </span>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                @if (payment.status === 'APPROVED') {
+                  <div class="payment-card__actions">
+                    <button
+                      type="button"
+                      class="btn-danger"
+                      [disabled]="refundingId() === payment.id"
+                      (click)="refund(payment)"
+                    >
+                      {{
+                        refundingId() === payment.id
+                          ? 'Procesando…'
+                          : 'Reembolsar'
+                      }}
+                    </button>
+                  </div>
+                }
+
+              </article>
+
+            }
+
+          </div>
+
+        }
+
+      </div>
+    </section>
+
+  } @else if (searched()) {
+
+    <section class="empty-state">
+      <div class="empty-state__icon">!</div>
+
+      <h3>No se encontró la orden</h3>
+
+      <p>
+        No se encontró ninguna orden con el ID indicado.
+      </p>
+    </section>
+
+  }
+</div>

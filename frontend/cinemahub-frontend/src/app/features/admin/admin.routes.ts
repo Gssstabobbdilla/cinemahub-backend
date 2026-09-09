@@ -29,7 +29,13 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'pagos',
-        loadComponent: () => import('../pagos/pagos-page.component').then(m => m.PagosPageComponent)}
+        loadComponent: () => import('../pagos/pagos-page.component').then(m => m.PagosPageComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('../usuarios/usuarios-page.component').then(m => m.UsuariosPageComponent)
+      }
+
     ]
   }
 ];
