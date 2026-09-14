@@ -4,6 +4,7 @@ import com.cinemahub.cinemahub.cinema.entity.Seat;
 import com.cinemahub.cinemahub.cinema.repository.SeatRepository;
 import com.cinemahub.cinemahub.common.exception.DuplicateResourceException;
 import com.cinemahub.cinemahub.common.exception.ResourceNotFoundException;
+import com.cinemahub.cinemahub.notification.service.NotificationService;
 import com.cinemahub.cinemahub.reservation.entity.Reservation;
 import com.cinemahub.cinemahub.reservation.entity.ReservationSeat;
 import com.cinemahub.cinemahub.reservation.entity.ReservationStatus;
@@ -33,17 +34,20 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ShowtimeRepository showtimeRepository;
     private final SeatRepository seatRepository;
+    private final NotificationService notificationService;
 
     public ReservationService(ReservationRepository reservationRepository,
                                ReservationSeatRepository reservationSeatRepository,
                                UserRepository userRepository,
                                ShowtimeRepository showtimeRepository,
-                               SeatRepository seatRepository) {
+                               SeatRepository seatRepository,
+                               NotificationService notificationService) {
         this.reservationRepository = reservationRepository;
         this.reservationSeatRepository = reservationSeatRepository;
         this.userRepository = userRepository;
         this.showtimeRepository = showtimeRepository;
         this.seatRepository = seatRepository;
+        this.notificationService = notificationService;
     }
 
     public Reservation findById(Long id) {
@@ -126,6 +130,12 @@ public class ReservationService {
                 .toList();
     }
 
+    /**
+     * Confirma la reserva (PENDING -> CONFIRMED) y notifica al usuario. Se llama tanto
+     * desde POST /api/reservations/{id}/confirm como desde OrderService.registerPayment
+     * cuando el pago es aprobado — centralizar la notificación acá evita duplicarla en
+     * los dos call sites.
+     */
     @Transactional
     public Reservation confirm(Long reservationId) {
         Reservation reservation = findById(reservationId);
@@ -133,6 +143,16 @@ public class ReservationService {
             throw new IllegalStateException("Solo una reserva PENDING puede confirmarse");
         }
         reservation.setStatus(ReservationStatus.CONFIRMED);
+
+        notificationService.create(
+                reservation.getUser().getId(),
+                "Reserva confirmada",
+                "Tu reserva #%d fue confirmada. ¡Disfruta la función!".formatted(reservation.getId()));
+        System.out.printf("Notificación de reserva confirmada enviada al usuario %s%n",
+                reservation.getUser().getEmail());
+        System.out.println("-------------------------------------------------------");
+        System.out.printf(notificationService.findByUser(reservation.getUser().getId()).toString());
+
         return reservation;
     }
 

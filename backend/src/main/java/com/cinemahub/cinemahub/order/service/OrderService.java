@@ -2,6 +2,9 @@ package com.cinemahub.cinemahub.order.service;
 
 import com.cinemahub.cinemahub.common.exception.DuplicateResourceException;
 import com.cinemahub.cinemahub.common.exception.ResourceNotFoundException;
+import com.cinemahub.cinemahub.membership.entity.Membership;
+import com.cinemahub.cinemahub.membership.service.MembershipService;
+import com.cinemahub.cinemahub.notification.service.NotificationService;
 import com.cinemahub.cinemahub.order.entity.Order;
 import com.cinemahub.cinemahub.order.entity.OrderProduct;
 import com.cinemahub.cinemahub.order.entity.OrderStatus;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -36,6 +40,8 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final PaymentRepository paymentRepository;
     private final ReservationService reservationService;
+    private final NotificationService notificationService;
+    private final MembershipService membershipService;
 
     public OrderService(OrderRepository orderRepository,
                          ReservationRepository reservationRepository,
@@ -43,7 +49,9 @@ public class OrderService {
                          OrderProductRepository orderProductRepository,
                          ProductRepository productRepository,
                          PaymentRepository paymentRepository,
-                         ReservationService reservationService) {
+                         ReservationService reservationService,
+                         NotificationService notificationService,
+                         MembershipService membershipService) {
         this.orderRepository = orderRepository;
         this.reservationRepository = reservationRepository;
         this.reservationSeatRepository = reservationSeatRepository;
@@ -51,6 +59,8 @@ public class OrderService {
         this.productRepository = productRepository;
         this.paymentRepository = paymentRepository;
         this.reservationService = reservationService;
+        this.notificationService = notificationService;
+        this.membershipService = membershipService;
     }
 
     public Order findById(Long id) {
@@ -122,8 +132,10 @@ public class OrderService {
     }
 
     /**
-     * Registra el pago y, si fue aprobado, marca la orden como PAID y confirma
-     * la reserva asociada (pasa de PENDING a CONFIRMED).
+     * Registra el pago y, si fue aprobado: marca la orden PAID, confirma la reserva
+     * (dispara notificación de reserva confirmada), notifica el pago aprobado, y
+     * otorga 1 punto de membresía por cada sol gastado — si el usuario no tiene
+     * membresía, se omite silenciosamente (es autoservicio, no se crea implícita).
      */
     @Transactional
     public Payment registerPayment(Long orderId, String paymentMethod, String transactionCode, boolean approved) {
@@ -141,11 +153,38 @@ public class OrderService {
             order.setStatus(OrderStatus.PAID);
             order.setPurchasedAt(OffsetDateTime.now());
             reservationService.confirm(order.getReservation().getId());
+
+            Long userId = order.getReservation().getUser().getId();
+
+            notificationService.create(
+                    userId,
+                    "Pago aprobado",
+                    "Tu pago de S/ %s fue aprobado. Ya podés retirar tus entradas.".formatted(order.getTotal()));
+
+            awardMembershipPoints(userId, order.getTotal());
         } else {
             payment.setStatus(PaymentStatus.REJECTED);
         }
 
         return paymentRepository.save(payment);
+    }
+
+    /**
+     * 1 punto por cada sol gastado (redondeado hacia abajo). Si el usuario no tiene
+     * membresía todavía, no se le crea una automáticamente — la membresía es
+     * autoservicio (ver MembershipService.createForUser / botón en "Mi cuenta").
+     */
+    private void awardMembershipPoints(Long userId, BigDecimal total) {
+        int points = total.setScale(0, RoundingMode.DOWN).intValue();
+        if (points <= 0) {
+            return;
+        }
+        try {
+            Membership membership = membershipService.findByUser(userId);
+            membershipService.adjustPoints(membership.getId(), points, "Compra orden pagada");
+        } catch (ResourceNotFoundException ignored) {
+            // El usuario no tiene membresía — no se otorgan puntos, no se interrumpe el pago.
+        }
     }
 
     @Transactional
