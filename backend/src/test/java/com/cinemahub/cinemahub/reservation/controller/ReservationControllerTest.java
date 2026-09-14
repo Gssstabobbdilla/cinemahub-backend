@@ -5,7 +5,7 @@ import com.cinemahub.cinemahub.reservation.dto.CreateReservationRequest;
 import com.cinemahub.cinemahub.reservation.entity.Reservation;
 import com.cinemahub.cinemahub.reservation.service.ReservationService;
 import com.cinemahub.cinemahub.security.entity.User;
-
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.junit.jupiter.api.Test;
@@ -46,6 +46,9 @@ class ReservationControllerTest {
 
     @MockitoBean
     private JwtService jwtService;
+
+    @MockitoBean
+    private OwnershipGuard ownershipGuard;
     
     @Test
     void createReturns201WithValidRequest() throws Exception {

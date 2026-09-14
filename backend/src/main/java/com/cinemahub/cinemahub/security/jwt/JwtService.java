@@ -44,6 +44,10 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
+    }
+
     @SuppressWarnings("unchecked")
     public List<String> extractRoles(String token) {
         return extractAllClaims(token).get("roles", List.class);

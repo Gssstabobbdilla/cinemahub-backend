@@ -7,6 +7,8 @@ import com.cinemahub.cinemahub.order.entity.PaymentStatus;
 import com.cinemahub.cinemahub.order.service.PaymentService;
 import com.cinemahub.cinemahub.reservation.entity.Reservation;
 import com.cinemahub.cinemahub.security.entity.User;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ class PaymentControllerTest {
     @MockitoBean
     private JwtService jwtService;
     
+    @MockitoBean
+    private OwnershipGuard ownershipGuard;
+
     private Payment payment(PaymentStatus status) {
         User user = new User("Nico", "Test", "nico@cinemahub.local", "hash");
         Reservation reservation = new Reservation(user, OffsetDateTime.now().plusMinutes(10));
@@ -88,5 +93,9 @@ class PaymentControllerTest {
         mockMvc.perform(get("/api/users/1/payments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("APPROVED"));
+
+        // No alcanza con que el mock no explote — confirma que el endpoint efectivamente
+        // pasa por el chequeo de ownership antes de tocar el service.
+        verify(ownershipGuard).requireSelfOrAdmin(1L);
     }
 }

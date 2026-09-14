@@ -2,6 +2,7 @@ package com.cinemahub.cinemahub.order.controller;
 
 import com.cinemahub.cinemahub.order.dto.PaymentResponse;
 import com.cinemahub.cinemahub.order.service.PaymentService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +15,11 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final OwnershipGuard ownershipGuard;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, OwnershipGuard ownershipGuard) {
         this.paymentService = paymentService;
+        this.ownershipGuard = ownershipGuard;
     }
 
     @GetMapping("/api/payments/{id}")
@@ -30,7 +33,8 @@ public class PaymentController {
     }
 
     @GetMapping("/api/users/{userId}/payments")
-    public List<PaymentResponse> findByUserId(@PathVariable Long userId) {
+    public List<PaymentResponse> findByUser(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         return paymentService.findByUserId(userId).stream().map(PaymentResponse::from).toList();
     }
 

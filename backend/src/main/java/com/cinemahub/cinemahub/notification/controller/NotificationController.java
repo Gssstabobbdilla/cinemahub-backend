@@ -5,6 +5,7 @@ import com.cinemahub.cinemahub.notification.dto.CreateNotificationRequest;
 import com.cinemahub.cinemahub.notification.dto.NotificationResponse;
 import com.cinemahub.cinemahub.notification.entity.Notification;
 import com.cinemahub.cinemahub.notification.service.NotificationService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +23,11 @@ import java.util.Map;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final OwnershipGuard ownershipGuard;
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, OwnershipGuard ownershipGuard) {
         this.notificationService = notificationService;
+        this.ownershipGuard = ownershipGuard;
     }
 
     @PostMapping("/api/notifications")
@@ -37,11 +40,13 @@ public class NotificationController {
 
     @GetMapping("/api/users/{userId}/notifications")
     public List<NotificationResponse> findByUser(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         return notificationService.findByUser(userId).stream().map(NotificationResponse::from).toList();
     }
 
     @GetMapping("/api/users/{userId}/notifications/unread")
     public List<NotificationResponse> findUnread(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         return notificationService.findUnread(userId).stream().map(NotificationResponse::from).toList();
     }
 
@@ -52,6 +57,7 @@ public class NotificationController {
 
     @PatchMapping("/api/users/{userId}/notifications/read-all")
     public Map<String, Integer> markAllAsRead(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         int updated = notificationService.markAllAsRead(userId);
         return Map.of("updated", updated);
     }

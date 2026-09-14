@@ -7,6 +7,7 @@ import com.cinemahub.cinemahub.reservation.dto.ReservationSeatResponse;
 import com.cinemahub.cinemahub.reservation.dto.ShowtimeSeatResponse;
 import com.cinemahub.cinemahub.reservation.entity.Reservation;
 import com.cinemahub.cinemahub.reservation.service.ReservationService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +23,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final OwnershipGuard ownershipGuard;
 
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, OwnershipGuard ownershipGuard) {
         this.reservationService = reservationService;
+        this.ownershipGuard = ownershipGuard;
     }
 
     @PostMapping("/api/reservations")
@@ -47,6 +50,7 @@ public class ReservationController {
 
     @GetMapping("/api/users/{userId}/reservations")
     public List<ReservationResponse> findByUser(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         return reservationService.findByUser(userId).stream().map(ReservationResponse::from).toList();
     }
 
