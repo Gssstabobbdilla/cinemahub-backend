@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findByOrderId(Long orderId);
-
     Optional<Payment> findByTransactionCode(String transactionCode);
+    List<Payment> findByOrder_Reservation_UserId(Long userId);
 }

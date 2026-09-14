@@ -18,6 +18,11 @@ export class PaymentService {
     return this.http.get<Payment[]>(`${this.apiUrl}/orders/${orderId}/payments`);
   }
 
+  // Historial de pagos del usuario autenticado, para "Mi cuenta".
+  findByUser(userId: number): Observable<Payment[]> {
+    return this.http.get<Payment[]>(`${this.apiUrl}/users/${userId}/payments`);
+  }
+
   refund(id: number): Observable<Payment> {
     return this.http.post<Payment>(`${this.apiUrl}/payments/${id}/refund`, {});
   }

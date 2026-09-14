@@ -14,6 +14,9 @@ import { UserService } from '../../core/services/user.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
+import { Payment } from '../../core/models/order.model';
+import { PaymentService } from '../../core/services/payment.service';
+
 @Component({
   selector: 'app-cuenta-page',
   standalone: true,
@@ -28,6 +31,7 @@ export class CuentaPageComponent implements OnInit {
   private currentUser = inject(CurrentUserService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private paymentService = inject(PaymentService);
 
   userId = this.currentUser.userId;
 
@@ -36,7 +40,7 @@ export class CuentaPageComponent implements OnInit {
   membership = signal<Membership | null>(null);
   membershipHistory = signal<any[]>([]);
   notifications = signal<Notification[]>([]);
-
+  payments = signal<Payment[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
 
@@ -104,6 +108,11 @@ export class CuentaPageComponent implements OnInit {
 
     this.notificationService.findByUser(userId).subscribe({
       next: notifications => this.notifications.set(notifications),
+      error: (err: AppError) => this.error.set(err.message)
+    });
+
+    this.paymentService.findByUser(userId).subscribe({
+      next: payments => this.payments.set(payments),
       error: (err: AppError) => this.error.set(err.message)
     });
   }

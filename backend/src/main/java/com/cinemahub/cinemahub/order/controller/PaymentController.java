@@ -29,6 +29,11 @@ public class PaymentController {
         return paymentService.findByOrder(orderId).stream().map(PaymentResponse::from).toList();
     }
 
+    @GetMapping("/api/users/{userId}/payments")
+    public List<PaymentResponse> findByUserId(@PathVariable Long userId) {
+        return paymentService.findByUserId(userId).stream().map(PaymentResponse::from).toList();
+    }
+
     @PostMapping("/api/payments/{id}/refund")
     public PaymentResponse refund(@PathVariable Long id) {
         return PaymentResponse.from(paymentService.refund(id));

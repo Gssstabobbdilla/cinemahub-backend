@@ -15,6 +15,9 @@ import { UserService } from '../../core/services/user.service';
 
 import { CuentaPageComponent } from './cuenta-page.component';
 
+import { Payment } from '../../core/models/order.model';
+import { PaymentService } from '../../core/services/payment.service';
+
 describe('CuentaPageComponent', () => {
   let fixture: ComponentFixture<CuentaPageComponent>;
 
@@ -39,6 +42,9 @@ describe('CuentaPageComponent', () => {
   };
   let currentUserServiceSpy: {
     userId: ReturnType<typeof vi.fn>;
+  };
+  let paymentServiceSpy: {
+    findByUser: ReturnType<typeof vi.fn>;
   };
 
   const user: User = {
@@ -75,6 +81,8 @@ describe('CuentaPageComponent', () => {
     userServiceSpy = { findById: vi.fn(), updateProfile: vi.fn() };
     reservationServiceSpy = { findByUser: vi.fn(), findSeats: vi.fn() };
     membershipServiceSpy = { findByUser: vi.fn(), createForUser: vi.fn(), findHistory: vi.fn() };
+    paymentServiceSpy = { findByUser: vi.fn() };
+    paymentServiceSpy.findByUser.mockReturnValue(of([]));
     notificationServiceSpy = {
       findByUser: vi.fn(),
       findUnread: vi.fn(),
@@ -90,7 +98,8 @@ describe('CuentaPageComponent', () => {
         { provide: ReservationService, useValue: reservationServiceSpy },
         { provide: MembershipService, useValue: membershipServiceSpy },
         { provide: NotificationService, useValue: notificationServiceSpy },
-        { provide: CurrentUserService, useValue: currentUserServiceSpy }
+        { provide: CurrentUserService, useValue: currentUserServiceSpy },
+        { provide: PaymentService, useValue: paymentServiceSpy },
       ]
     });
 
@@ -222,5 +231,29 @@ describe('CuentaPageComponent', () => {
     });
     expect(fixture.componentInstance.user()).toEqual(updated);
     expect(fixture.componentInstance.editingProfile()).toBe(false);
+  });
+
+  it('ngOnInit carga también el historial de pagos usando el userId de la sesión', () => {
+    currentUserServiceSpy.userId.mockReturnValue(1);
+    userServiceSpy.findById.mockReturnValue(of(user));
+    reservationServiceSpy.findByUser.mockReturnValue(of([]));
+    membershipServiceSpy.findByUser.mockReturnValue(of(membership));
+    notificationServiceSpy.findByUser.mockReturnValue(of([]));
+
+    const payment: Payment = {
+      id: 1,
+      orderId: 5,
+      paymentMethod: 'CARD',
+      transactionCode: 'TX-1',
+      amount: 25,
+      status: 'APPROVED',
+      paidAt: '2026-08-14T10:20:00-05:00'
+    };
+    paymentServiceSpy.findByUser.mockReturnValue(of([payment]));
+
+    fixture.detectChanges();
+
+    expect(paymentServiceSpy.findByUser).toHaveBeenCalledWith(1);
+    expect(fixture.componentInstance.payments()).toEqual([payment]);
   });
 });

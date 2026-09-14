@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,5 +79,14 @@ class PaymentControllerTest {
         mockMvc.perform(post("/api/payments/3/refund"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("REFUNDED"));
+    }
+
+    @Test
+    void findByUserReturns200WithListOfPayments() throws Exception {
+        when(paymentService.findByUserId(1L)).thenReturn(List.of(payment(PaymentStatus.APPROVED)));
+
+        mockMvc.perform(get("/api/users/1/payments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("APPROVED"));
     }
 }

@@ -41,6 +41,10 @@ public class PaymentService {
         return paymentRepository.findByTransactionCode(transactionCode);
     }
 
+    public List<Payment> findByUserId(Long userId) {
+        return paymentRepository.findByOrder_Reservation_UserId(userId);
+    }
+
     @Transactional
     public Payment refund(Long paymentId) {
         Payment payment = findById(paymentId);

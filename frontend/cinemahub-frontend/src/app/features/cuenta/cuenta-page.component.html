@@ -76,6 +76,25 @@
       </div>
     </section>
 
+    <section class="payments">
+      <h3>Historial de pagos</h3>
+
+      @if (payments().length === 0) {
+        <p>Todavía no tenés pagos registrados.</p>
+      } @else {
+        <ul class="payment-list">
+          @for (p of payments(); track p.id) {
+            <li class="payment-item">
+              <span class="payment-method">{{ p.paymentMethod }}</span>
+              <span class="payment-amount">S/ {{ p.amount }}</span>
+              <span class="status-tag" [class]="'status-' + p.status.toLowerCase()">{{ p.status }}</span>
+              <span class="payment-date">{{ p.paidAt || 'Pendiente' }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
     <section class="panel">
       <header class="panel__header">Membresía</header>
       <div class="panel__body">
