@@ -4,6 +4,28 @@ run-name: ${{github.actor}} esta ejecutando un pipeline
 on: [push]
 
 jobs:
+    Validar-Proyecto-Sonar:
+        runs-on: ubuntu-latest
+        steps: 
+            - run: echo "Analizar con SonarCloud el proyecto"
+            
+    Planificar-Terraform:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+            - run: echo "Planificando la infraestructura aws en la VPC, APIGtw y lambdas con Terraform "
+    
+    Desplegar-Dev:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Entregar la aplicación en el ambiente de Desarrollo"
+
+    Despliegar-Produccion:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Desplegar la aplicación final en el ambiente de Producción"
+        
     Saludar-Hello-World:
         runs-on: ubuntu-latest
         steps:
