@@ -26,28 +26,14 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "priv_subnet_a_cidr" {
-  description = "CIDR de la subred privada de aplicación/datos en AZ lógica A"
-  type        = string
-  default     = "10.0.11.0/24"
+variable "public_subnets_cidr" {
+  description = "CIDR de las subredes publicas"
+  type        = list(string)
 }
 
-variable "priv_subnet_b_cidr" {
-  description = "CIDR de la subred privada de aplicación/datos en AZ lógica B"
-  type        = string
-  default     = "10.0.12.0/24"
-}
-
-variable "public_subnet_a_cidr" {
-  description = "CIDR de la subred pública en AZ lógica A"
-  type        = string
-  default     = "10.0.1.0/24"
-}
-
-variable "public_subnet_b_cidr" {
-  description = "CIDR de la subred pública en AZ lógica B"
-  type        = string
-  default     = "10.0.2.0/24"
+variable "private_subnets_cidr" {
+  description = "CIDR de las subredes privadas"
+  type        = list(string)
 }
 
 variable "db_name" {

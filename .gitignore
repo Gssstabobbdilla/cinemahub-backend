@@ -39,3 +39,4 @@ build/
 *.tfstate.*
 *.tfvars
 *.tfvars.json
+.terraform.tfstate.d/
