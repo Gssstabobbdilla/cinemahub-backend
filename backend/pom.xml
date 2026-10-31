@@ -42,21 +42,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- Flyway: starter de autoconfiguración (Spring Boot 4 modularizado) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-flyway</artifactId>
-        </dependency>
-
-        <!-- Flyway PostgreSQL support -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-        </dependency>
-
-
-        <!-- WEB -->
+<!-- WEB -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
