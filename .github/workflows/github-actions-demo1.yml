@@ -12,16 +12,16 @@ jobs:
           - name: Planificar recursos (Crear/Modificar)
             run: echo "Evaluando qué recursos de AWS se van a crear, modificar o eliminar."
 
+    Desplegar-Dev:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Entregar la aplicación en el ambiente de Desarrollo"
+
     Desplegar-QA:
         runs-on: ubuntu-latest
         steps:
           - name: Desplegar en entorno de pruebas
             run: echo "Desplegando en el entorno QA de pruebas"
-        
-    Desplegar-Dev:
-        runs-on: ubuntu-latest
-        steps:
-            - run: echo "Entregar la aplicación en el ambiente de Desarrollo"
 
     Despliegar-Produccion:
         runs-on: ubuntu-latest
