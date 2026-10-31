@@ -66,3 +66,27 @@ variable "db_publicly_accessible" {
   default     = false
 }
 
+
+variable "db_username" {
+  description = "Usuario administrador inicial de RDS"
+  type        = string
+  default     = "cinema_admin"
+}
+
+variable "db_engine_version" {
+  description = "Versión de PostgreSQL"
+  type        = string
+  default     = "17.11"
+}
+
+variable "db_instance_class" {
+  description = "Clase de la instancia RDS para el entorno de desarrollo"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage_gb" {
+  description = "Almacenamiento inicial de RDS en GB"
+  type        = number
+  default     = 20
+}
