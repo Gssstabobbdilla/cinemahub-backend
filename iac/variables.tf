@@ -90,3 +90,22 @@ variable "db_allocated_storage_gb" {
   type        = number
   default     = 20
 }
+
+variable "lambda_runtime" {
+  description = "Runtime de Node.js para las funciones Lambda sin lógica de negocio"
+  type        = string
+  default     = "nodejs22.x"
+}
+
+variable "lambda_memory_size" {
+  description = "Memoria en MB para cada función Lambda"
+  type        = number
+  default     = 128
+}
+
+variable "lambda_timeout" {
+  description = "Tiempo máximo de ejecución en segundos para cada función Lambda"
+  type        = number
+  default     = 15
+}
+
