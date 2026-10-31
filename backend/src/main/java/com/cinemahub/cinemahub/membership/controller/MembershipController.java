@@ -7,6 +7,7 @@ import com.cinemahub.cinemahub.membership.dto.MembershipResponse;
 import com.cinemahub.cinemahub.membership.dto.PointHistoryResponse;
 import com.cinemahub.cinemahub.membership.entity.Membership;
 import com.cinemahub.cinemahub.membership.service.MembershipService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,20 +24,24 @@ import java.util.List;
 public class MembershipController {
 
     private final MembershipService membershipService;
+    private final OwnershipGuard ownershipGuard;
 
-    public MembershipController(MembershipService membershipService) {
+    public MembershipController(MembershipService membershipService, OwnershipGuard ownershipGuard) {
         this.membershipService = membershipService;
+        this.ownershipGuard = ownershipGuard;
     }
 
     @PostMapping("/api/users/{userId}/membership")
     @ResponseStatus(HttpStatus.CREATED)
     public MembershipResponse createForUser(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         Membership membership = membershipService.createForUser(userId);
         return MembershipResponse.from(membership);
     }
 
     @GetMapping("/api/users/{userId}/membership")
     public MembershipResponse findByUser(@PathVariable Long userId) {
+        ownershipGuard.requireSelfOrAdmin(userId);
         return MembershipResponse.from(membershipService.findByUser(userId));
     }
 

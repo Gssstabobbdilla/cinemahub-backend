@@ -9,6 +9,7 @@ import com.cinemahub.cinemahub.security.dto.UpdateProfileRequest;
 import com.cinemahub.cinemahub.security.dto.UserResponse;
 import com.cinemahub.cinemahub.security.entity.User;
 import com.cinemahub.cinemahub.security.service.UserService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,9 +30,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final OwnershipGuard ownershipGuard;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, OwnershipGuard ownershipGuard) {
         this.userService = userService;
+        this.ownershipGuard = ownershipGuard;
     }
 
     @GetMapping
@@ -54,6 +57,7 @@ public class UserController {
 
     @PutMapping("/{id}/profile")
     public UserResponse updateProfile(@PathVariable Long id, @Valid @RequestBody UpdateProfileRequest request) {
+        ownershipGuard.requireSelfOrAdmin(id);
         User user = userService.updateProfile(id, request.firstName(), request.lastName(), request.phone());
         return UserResponse.from(user);
     }

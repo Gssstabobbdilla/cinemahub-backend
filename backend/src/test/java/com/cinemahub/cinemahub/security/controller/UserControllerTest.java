@@ -22,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import com.cinemahub.cinemahub.security.jwt.JwtService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
+
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -39,6 +41,9 @@ class UserControllerTest {
 
     @MockitoBean
     private JwtService jwtService;
+
+    @MockitoBean
+    private OwnershipGuard ownershipGuard;
 
     @Test
     void registerReturns201WithValidRequestAndNeverExposesPassword() throws Exception {

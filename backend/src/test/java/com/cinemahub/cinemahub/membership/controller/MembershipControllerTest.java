@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import com.cinemahub.cinemahub.security.jwt.JwtService;
+import com.cinemahub.cinemahub.security.access.OwnershipGuard;
 
 @AutoConfigureMockMvc(addFilters = false)
 
@@ -43,6 +44,9 @@ class MembershipControllerTest {
     @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private OwnershipGuard ownershipGuard;
+    
     private User user() {
         User user = new User("Sofia", "Test", "sofia@cinemahub.local", "hash");
         ReflectionTestUtils.setField(user, "id", 1L);
