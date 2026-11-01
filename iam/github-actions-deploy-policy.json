@@ -193,7 +193,8 @@
                                          "iam:GetRolePolicy",
                                          "iam:ListRoleTags",
                                          "iam:AttachRolePolicy",
-                                         "iam:DetachRolePolicy"
+                                         "iam:DetachRolePolicy",
+                                         "iam:ListInstanceProfilesForRole"
                                      ],
                           "Resource":  "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role",
                           "Condition":  {
@@ -232,6 +233,17 @@
                                          "apigateway:UntagResource"
                                      ],
                           "Resource":  "arn:aws:apigateway:us-east-2::/apis/*/stages*"
+                      },
+                      {
+                          "Sid":  "TerraformLambdaENIDelete",
+                          "Effect":  "Allow",
+                          "Action":  "ec2:DeleteNetworkInterface",
+                          "Resource":  "arn:aws:ec2:us-east-2:829999272931:network-interface/*",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "aws:RequestedRegion":  "us-east-2"
+                                                             }
+                                        }
                       }
                   ]
 }
