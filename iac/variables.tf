@@ -4,8 +4,14 @@ variable "project_name" {
   default     = "cinemahub"
 }
 
+variable "environment" {
+  description = "Entorno de despliegue de CinemaHub"
+  type        = string
+  default     = "dev"
+}
+
 locals {
-  env = terraform.workspace
+  env = var.environment
 
   common_tags = {
     Project     = var.project_name
@@ -13,7 +19,6 @@ locals {
     ManagedBy   = "Terraform"
   }
 }
-
 variable "aws_region" {
   description = "Región AWS"
   type        = string
