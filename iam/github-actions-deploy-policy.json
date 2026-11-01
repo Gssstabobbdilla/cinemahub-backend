@@ -1,215 +1,228 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "TerraformStateList",
-      "Effect": "Allow",
-      "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2",
-      "Condition": {
-        "StringLike": {
-          "s3:prefix": [
-            "lab09/dev/",
-            "lab09/dev/*"
-          ]
-        }
-      }
-    },
-    {
-      "Sid": "TerraformStateReadWrite",
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject"
-      ],
-      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate"
-    },
-    {
-      "Sid": "TerraformStateLock",
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject"
-      ],
-      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate.tflock"
-    },
-    {
-      "Sid": "TerraformEC2Read",
-      "Effect": "Allow",
-      "Action": "ec2:Describe*",
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-2"
-        }
-      }
-    },
-    {
-      "Sid": "TerraformEC2NetworkManagement",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateVpc",
-        "ec2:DeleteVpc",
-        "ec2:ModifyVpcAttribute",
-        "ec2:CreateSubnet",
-        "ec2:DeleteSubnet",
-        "ec2:ModifySubnetAttribute",
-        "ec2:CreateInternetGateway",
-        "ec2:DeleteInternetGateway",
-        "ec2:AttachInternetGateway",
-        "ec2:DetachInternetGateway",
-        "ec2:CreateRouteTable",
-        "ec2:DeleteRouteTable",
-        "ec2:CreateRoute",
-        "ec2:DeleteRoute",
-        "ec2:AssociateRouteTable",
-        "ec2:DisassociateRouteTable",
-        "ec2:CreateSecurityGroup",
-        "ec2:DeleteSecurityGroup",
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:RevokeSecurityGroupIngress",
-        "ec2:AuthorizeSecurityGroupEgress",
-        "ec2:RevokeSecurityGroupEgress",
-        "ec2:CreateTags",
-        "ec2:DeleteTags"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-2"
-        }
-      }
-    },
-    {
-      "Sid": "TerraformRDSRead",
-      "Effect": "Allow",
-      "Action": [
-        "rds:Describe*",
-        "rds:ListTagsForResource"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-2"
-        }
-      }
-    },
-    {
-      "Sid": "TerraformRDSInstanceManagement",
-      "Effect": "Allow",
-      "Action": [
-        "rds:CreateDBInstance",
-        "rds:ModifyDBInstance",
-        "rds:DeleteDBInstance",
-        "rds:AddTagsToResource",
-        "rds:RemoveTagsFromResource"
-      ],
-      "Resource": "arn:aws:rds:us-east-2:829999272931:db:cinemahub-dev-*"
-    },
-    {
-      "Sid": "TerraformRDSSubnetGroupManagement",
-      "Effect": "Allow",
-      "Action": [
-        "rds:CreateDBSubnetGroup",
-        "rds:ModifyDBSubnetGroup",
-        "rds:DeleteDBSubnetGroup",
-        "rds:AddTagsToResource",
-        "rds:RemoveTagsFromResource"
-      ],
-      "Resource": "arn:aws:rds:us-east-2:829999272931:subgrp:cinemahub-dev-*"
-    },
-    {
-      "Sid": "RDSManagedMasterSecretCreateAndTag",
-      "Effect": "Allow",
-      "Action": [
-        "secretsmanager:CreateSecret",
-        "secretsmanager:TagResource"
-      ],
-      "Resource": "arn:aws:secretsmanager:us-east-2:829999272931:secret:rds!db-*"
-    },
-    {
-      "Sid": "RDSManagedMasterSecretKMSDescribe",
-      "Effect": "Allow",
-      "Action": "kms:DescribeKey",
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-2"
-        }
-      }
-    },
-    {
-      "Sid": "TerraformLambdaList",
-      "Effect": "Allow",
-      "Action": "lambda:ListFunctions",
-      "Resource": "*"
-    },
-    {
-      "Sid": "TerraformLambdaManagement",
-      "Effect": "Allow",
-      "Action": [
-        "lambda:CreateFunction",
-        "lambda:DeleteFunction",
-        "lambda:GetFunction",
-        "lambda:GetFunctionConfiguration",
-        "lambda:UpdateFunctionCode",
-        "lambda:UpdateFunctionConfiguration",
-        "lambda:ListTags",
-        "lambda:TagResource",
-        "lambda:UntagResource",
-        "lambda:AddPermission",
-        "lambda:RemovePermission",
-        "lambda:GetPolicy",
-        "lambda:ListVersionsByFunction"
-      ],
-      "Resource": "arn:aws:lambda:us-east-2:829999272931:function:cinemahub-dev-*"
-    },
-    {
-      "Sid": "TerraformApiGatewayManagement",
-      "Effect": "Allow",
-      "Action": [
-        "apigateway:GET",
-        "apigateway:POST",
-        "apigateway:PATCH",
-        "apigateway:DELETE"
-      ],
-      "Resource": "arn:aws:apigateway:us-east-2::/apis*"
-    },
-    {
-      "Sid": "TerraformLambdaExecutionRoleManagement",
-      "Effect": "Allow",
-      "Action": [
-        "iam:CreateRole",
-        "iam:DeleteRole",
-        "iam:GetRole",
-        "iam:UpdateAssumeRolePolicy",
-        "iam:TagRole",
-        "iam:UntagRole",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRolePolicies",
-        "iam:GetRolePolicy",
-        "iam:ListRoleTags",
-        "iam:AttachRolePolicy",
-        "iam:DetachRolePolicy"
-      ],
-      "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role",
-      "Condition": {
-        "ArnEqualsIfExists": {
-          "iam:PolicyARN": "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-        }
-      }
-    },
-    {
-      "Sid": "PassOnlyCinemaHubLambdaRole",
-      "Effect": "Allow",
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role",
-      "Condition": {
-        "StringEquals": {
-          "iam:PassedToService": "lambda.amazonaws.com"
-        }
-      }
-    }
-  ]
+    "Version":  "2012-10-17",
+    "Statement":  [
+                      {
+                          "Sid":  "TerraformStateList",
+                          "Effect":  "Allow",
+                          "Action":  "s3:ListBucket",
+                          "Resource":  "arn:aws:s3:::cinemahub-tfstate-us-east-2",
+                          "Condition":  {
+                                            "StringLike":  {
+                                                               "s3:prefix":  [
+                                                                                 "lab09/dev/",
+                                                                                 "lab09/dev/*"
+                                                                             ]
+                                                           }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformStateReadWrite",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "s3:GetObject",
+                                         "s3:PutObject"
+                                     ],
+                          "Resource":  "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate"
+                      },
+                      {
+                          "Sid":  "TerraformStateLock",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "s3:GetObject",
+                                         "s3:PutObject",
+                                         "s3:DeleteObject"
+                                     ],
+                          "Resource":  "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate.tflock"
+                      },
+                      {
+                          "Sid":  "TerraformEC2Read",
+                          "Effect":  "Allow",
+                          "Action":  "ec2:Describe*",
+                          "Resource":  "*",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "aws:RequestedRegion":  "us-east-2"
+                                                             }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformEC2NetworkManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "ec2:CreateVpc",
+                                         "ec2:DeleteVpc",
+                                         "ec2:ModifyVpcAttribute",
+                                         "ec2:CreateSubnet",
+                                         "ec2:DeleteSubnet",
+                                         "ec2:ModifySubnetAttribute",
+                                         "ec2:CreateInternetGateway",
+                                         "ec2:DeleteInternetGateway",
+                                         "ec2:AttachInternetGateway",
+                                         "ec2:DetachInternetGateway",
+                                         "ec2:CreateRouteTable",
+                                         "ec2:DeleteRouteTable",
+                                         "ec2:CreateRoute",
+                                         "ec2:DeleteRoute",
+                                         "ec2:AssociateRouteTable",
+                                         "ec2:DisassociateRouteTable",
+                                         "ec2:CreateSecurityGroup",
+                                         "ec2:DeleteSecurityGroup",
+                                         "ec2:AuthorizeSecurityGroupIngress",
+                                         "ec2:RevokeSecurityGroupIngress",
+                                         "ec2:AuthorizeSecurityGroupEgress",
+                                         "ec2:RevokeSecurityGroupEgress",
+                                         "ec2:CreateTags",
+                                         "ec2:DeleteTags"
+                                     ],
+                          "Resource":  "*",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "aws:RequestedRegion":  "us-east-2"
+                                                             }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformRDSRead",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "rds:Describe*",
+                                         "rds:ListTagsForResource"
+                                     ],
+                          "Resource":  "*",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "aws:RequestedRegion":  "us-east-2"
+                                                             }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformRDSInstanceManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "rds:CreateDBInstance",
+                                         "rds:ModifyDBInstance",
+                                         "rds:DeleteDBInstance",
+                                         "rds:AddTagsToResource",
+                                         "rds:RemoveTagsFromResource"
+                                     ],
+                          "Resource":  "arn:aws:rds:us-east-2:829999272931:db:cinemahub-dev-*"
+                      },
+                      {
+                          "Sid":  "TerraformRDSSubnetGroupManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "rds:CreateDBSubnetGroup",
+                                         "rds:ModifyDBSubnetGroup",
+                                         "rds:DeleteDBSubnetGroup",
+                                         "rds:AddTagsToResource",
+                                         "rds:RemoveTagsFromResource",
+                                         "rds:CreateDBInstance"
+                                     ],
+                          "Resource":  "arn:aws:rds:us-east-2:829999272931:subgrp:cinemahub-dev-*"
+                      },
+                      {
+                          "Sid":  "RDSManagedMasterSecretCreateAndTag",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "secretsmanager:CreateSecret",
+                                         "secretsmanager:TagResource"
+                                     ],
+                          "Resource":  "arn:aws:secretsmanager:us-east-2:829999272931:secret:rds!db-*"
+                      },
+                      {
+                          "Sid":  "RDSManagedMasterSecretKMSDescribe",
+                          "Effect":  "Allow",
+                          "Action":  "kms:DescribeKey",
+                          "Resource":  "*",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "aws:RequestedRegion":  "us-east-2"
+                                                             }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformLambdaList",
+                          "Effect":  "Allow",
+                          "Action":  "lambda:ListFunctions",
+                          "Resource":  "*"
+                      },
+                      {
+                          "Sid":  "TerraformLambdaManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "lambda:CreateFunction",
+                                         "lambda:DeleteFunction",
+                                         "lambda:GetFunction",
+                                         "lambda:GetFunctionConfiguration",
+                                         "lambda:UpdateFunctionCode",
+                                         "lambda:UpdateFunctionConfiguration",
+                                         "lambda:ListTags",
+                                         "lambda:TagResource",
+                                         "lambda:UntagResource",
+                                         "lambda:AddPermission",
+                                         "lambda:RemovePermission",
+                                         "lambda:GetPolicy",
+                                         "lambda:ListVersionsByFunction",
+                                         "lambda:GetFunctionCodeSigningConfig"
+                                     ],
+                          "Resource":  "arn:aws:lambda:us-east-2:829999272931:function:cinemahub-dev-*"
+                      },
+                      {
+                          "Sid":  "TerraformApiGatewayManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "apigateway:GET",
+                                         "apigateway:POST",
+                                         "apigateway:PATCH",
+                                         "apigateway:DELETE"
+                                     ],
+                          "Resource":  "arn:aws:apigateway:us-east-2::/apis*"
+                      },
+                      {
+                          "Sid":  "TerraformLambdaExecutionRoleManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "iam:CreateRole",
+                                         "iam:DeleteRole",
+                                         "iam:GetRole",
+                                         "iam:UpdateAssumeRolePolicy",
+                                         "iam:TagRole",
+                                         "iam:UntagRole",
+                                         "iam:ListAttachedRolePolicies",
+                                         "iam:ListRolePolicies",
+                                         "iam:GetRolePolicy",
+                                         "iam:ListRoleTags",
+                                         "iam:AttachRolePolicy",
+                                         "iam:DetachRolePolicy"
+                                     ],
+                          "Resource":  "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role",
+                          "Condition":  {
+                                            "ArnEqualsIfExists":  {
+                                                                      "iam:PolicyARN":  "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                                                                  }
+                                        }
+                      },
+                      {
+                          "Sid":  "PassOnlyCinemaHubLambdaRole",
+                          "Effect":  "Allow",
+                          "Action":  "iam:PassRole",
+                          "Resource":  "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role",
+                          "Condition":  {
+                                            "StringEquals":  {
+                                                                 "iam:PassedToService":  "lambda.amazonaws.com"
+                                                             }
+                                        }
+                      },
+                      {
+                          "Sid":  "TerraformApiGatewayTagManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "apigateway:GET",
+                                         "apigateway:POST",
+                                         "apigateway:PUT",
+                                         "apigateway:DELETE"
+                                     ],
+                          "Resource":  "arn:aws:apigateway:us-east-2::/tags/*"
+                      }
+                  ]
 }
