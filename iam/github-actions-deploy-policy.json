@@ -223,6 +223,15 @@
                                          "apigateway:DELETE"
                                      ],
                           "Resource":  "arn:aws:apigateway:us-east-2::/tags/*"
+                      },
+                      {
+                          "Sid":  "TerraformApiGatewayV2StageTagManagement",
+                          "Effect":  "Allow",
+                          "Action":  [
+                                         "apigateway:TagResource",
+                                         "apigateway:UntagResource"
+                                     ],
+                          "Resource":  "arn:aws:apigateway:us-east-2::/apis/*/stages*"
                       }
                   ]
 }
