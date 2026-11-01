@@ -1,0 +1,96 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TerraformStateList",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "lab09/dev/",
+            "lab09/dev/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "TerraformStateReadOnly",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate"
+    },
+    {
+      "Sid": "TerraformStateLock",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::cinemahub-tfstate-us-east-2/lab09/dev/terraform.tfstate.tflock"
+    },
+    {
+      "Sid": "TerraformEC2Read",
+      "Effect": "Allow",
+      "Action": "ec2:Describe*",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformRDSRead",
+      "Effect": "Allow",
+      "Action": [
+        "rds:Describe*",
+        "rds:ListTagsForResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformLambdaList",
+      "Effect": "Allow",
+      "Action": "lambda:ListFunctions",
+      "Resource": "*"
+    },
+    {
+      "Sid": "TerraformLambdaFunctionRead",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:GetPolicy",
+        "lambda:ListTags",
+        "lambda:ListVersionsByFunction"
+      ],
+      "Resource": "arn:aws:lambda:us-east-2:829999272931:function:cinemahub-dev-*"
+    },
+    {
+      "Sid": "TerraformApiGatewayRead",
+      "Effect": "Allow",
+      "Action": "apigateway:GET",
+      "Resource": "arn:aws:apigateway:us-east-2::/apis*"
+    },
+    {
+      "Sid": "TerraformLambdaExecutionRoleRead",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListRoleTags"
+      ],
+      "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role"
+    }
+  ]
+}
