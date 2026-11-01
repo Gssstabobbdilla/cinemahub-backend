@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Configuracion local del backend Terraform
+**/backend.hcl
+
+
+.terraform/
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform.tfstate.d/

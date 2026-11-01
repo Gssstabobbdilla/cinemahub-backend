@@ -1,7 +1,8 @@
 name: Github Actions demo
 
 run-name: ${{github.actor}} esta ejecutando un pipeline
-on: [push]
+on:
+  workflow_dispatch:
 
 jobs:
     Validar-y-Planificar:

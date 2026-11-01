@@ -1,0 +1,141 @@
+# CinemaHub — Apply/Destroy desde GitHub Actions
+
+Este kit agrega dos workflows manuales. El workflow de validación/plan que ya existe (`.github/workflows/deploy.yml`) se mantiene.
+
+## Flujo
+
+- Push a `development`: el workflow existente ejecuta `fmt`, `init`, `validate` y `plan`.
+- Actions → `Terraform Apply - Dev`: el usuario selecciona `APPLY`. El job genera un plan con el rol de lectura y luego aplica ese mismo plan con el rol de despliegue.
+- Actions → `Terraform Destroy - Dev`: el usuario selecciona `DESTROY`. El job genera un plan de destrucción con el rol de lectura y luego ejecuta ese plan con el rol de despliegue.
+- Ambos workflows solo permiten la rama `development`, usan OIDC, el mismo backend S3 y el grupo de concurrencia `terraform-dev`.
+
+La selección `APPLY`/`DESTROY` es una confirmación manual explícita. No hay aprobación de Environment adicional en estos YAML porque el Environment `dev` actual también lo usa el workflow automático de plan. Para añadir revisores humanos, habría que crear un environment separado y ajustar el trust policy OIDC.
+
+## Archivos
+
+- `.github/workflows/terraform-apply.yml`
+- `.github/workflows/terraform-destroy.yml`
+- `iam/github-actions-plan-read-policy.json`
+- `iam/github-actions-deploy-trust-policy.json`
+- `iam/github-actions-deploy-policy.json`
+
+## 1. Validar e instalar la política de solo lectura al rol de plan
+
+Ejecutar desde la raíz del repositorio, con PowerShell y el perfil AWS SSO administrador:
+
+```powershell
+aws sso login --profile ManuGott
+$env:AWS_PROFILE = "ManuGott"
+$env:AWS_PAGER = ""
+aws sts get-caller-identity
+
+aws accessanalyzer validate-policy `
+  --policy-type IDENTITY_POLICY `
+  --policy-document file://iam/github-actions-plan-read-policy.json `
+  --region us-east-2 `
+  --no-cli-pager
+```
+
+Revisa que no haya hallazgos de tipo `ERROR` antes de continuar. Las recomendaciones sobre comodines de lectura deben evaluarse según el alcance previsto.
+
+```powershell
+aws iam create-policy `
+  --policy-name lab09-github-actions-plan-read-policy `
+  --description "Read-only Terraform plan access for CinemaHub dev" `
+  --policy-document file://iam/github-actions-plan-read-policy.json
+
+aws iam attach-role-policy `
+  --role-name lab09-github-actions-dev `
+  --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-plan-read-policy
+```
+
+Después de confirmar que la nueva política está adjunta, quitar la política anterior que contenía permisos de escritura que ya no necesita el rol de plan:
+
+```powershell
+aws iam detach-role-policy `
+  --role-name lab09-github-actions-dev `
+  --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-dev-policy
+```
+
+No borrar la política anterior en esta etapa; solo queda desasociada del rol de plan.
+
+## 2. Validar y crear el rol de despliegue
+
+Antes de crear la política:
+
+```powershell
+aws accessanalyzer validate-policy `
+  --policy-type IDENTITY_POLICY `
+  --policy-document file://iam/github-actions-deploy-policy.json `
+  --region us-east-2 `
+  --no-cli-pager
+```
+
+Revisa que no haya hallazgos de tipo `ERROR`. Luego crea el rol y la política:
+
+```powershell
+aws iam create-policy `
+  --policy-name lab09-github-actions-deploy-dev-policy `
+  --description "Scoped Terraform apply/destroy access for CinemaHub dev" `
+  --policy-document file://iam/github-actions-deploy-policy.json
+
+aws iam create-role `
+  --role-name lab09-github-actions-deploy-dev `
+  --description "GitHub Actions OIDC role for CinemaHub dev apply and destroy" `
+  --max-session-duration 3600 `
+  --assume-role-policy-document file://iam/github-actions-deploy-trust-policy.json
+
+aws iam attach-role-policy `
+  --role-name lab09-github-actions-deploy-dev `
+  --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-deploy-dev-policy
+```
+
+El trust policy limita la asunción al repositorio `Gssstabobbdilla/cinemahub-backend`, usando su subject OIDC inmutable y el Environment `dev`, tal como aparece en el rol actual. No cambies el nombre del environment sin actualizar el trust policy.
+
+Verificar:
+
+```powershell
+aws iam get-role --role-name lab09-github-actions-deploy-dev --query "Role.Arn" --output text
+aws iam list-attached-role-policies --role-name lab09-github-actions-deploy-dev --output table
+aws iam list-attached-role-policies --role-name lab09-github-actions-dev --output table
+```
+
+El ARN esperado del nuevo rol es:
+
+`arn:aws:iam::829999272931:role/lab09-github-actions-deploy-dev`
+
+## 3. Incorporar los workflows al repositorio
+
+Copia los dos archivos `.yml` del kit a `.github/workflows/` del repositorio.
+
+Desde la raíz del repo:
+
+```powershell
+git status
+git add iam/
+git commit -m "feat(iam): separate terraform plan and deploy permissions"
+
+git add .github/workflows/terraform-apply.yml .github/workflows/terraform-destroy.yml README-SETUP.md
+git commit -m "feat(ci): add manual terraform apply and destroy workflows"
+
+git push origin development
+```
+
+Los archivos de workflow manual deben estar también en la rama predeterminada para que GitHub habilite `workflow_dispatch`. Este repositorio tiene `main` como rama predeterminada. Abre un Pull Request `development` → `main` y fusiónalo; luego, en Actions → Run workflow, selecciona `development` como la rama de ejecución.
+
+## 4. Ejecutar
+
+- Apply: Actions → `Terraform Apply - Dev` → Run workflow → branch `development` → confirmation `APPLY`.
+- Destroy: Actions → `Terraform Destroy - Dev` → Run workflow → branch `development` → confirmation `DESTROY`.
+
+Los pasos muestran el plan en el resumen del workflow y, en el mismo run, aplican inmediatamente el plan guardado. La confirmación manual `APPLY` o `DESTROY` se da al iniciar el workflow; no hay una segunda pausa de aprobación después de ver el plan. El propio run solo admite la rama `development`.
+
+## Seguridad y límites
+
+- No se almacenan claves IAM de larga duración en GitHub Secrets; la autenticación usa OIDC. El workflow de plan automático conserva `vars.AWS_ROLE_ARN`; el ARN del rol de despliegue está explícito en los YAML y no es un secreto.
+- El rol de plan puede leer el state y escribir/borrar solo el objeto de lock `.tflock`; no puede escribir el state ni modificar recursos AWS.
+- El rol de despliegue puede gestionar recursos de red EC2 solo en `us-east-2`, RDS solo con nombres `cinemahub-dev-*`, funciones Lambda `cinemahub-dev-*`, la API Gateway del ámbito regional y únicamente el rol de ejecución Lambda especificado. `iam:PassRole` solo permite pasar ese rol a `lambda.amazonaws.com`. Para `manage_master_user_password = true`, solo puede crear y etiquetar secretos con nombre `rds!db-*`; no tiene permiso para leer su valor. `kms:DescribeKey` es de solo lectura y está limitado a `us-east-2` para que RDS pueda usar las claves administradas predeterminadas.
+- El policy de EC2 usa `Resource: "*"` en varias acciones de creación/describe porque las APIs de EC2 requieren ese alcance para ciertas operaciones; está limitado por acciones explícitas y `aws:RequestedRegion`.
+- Los planes guardados (`tfplan`) no se suben a artifacts; se crean y aplican en el mismo job. Los valores sensibles que Terraform marca como sensitive quedan redactados en `terraform show`.
+- `terraform destroy` elimina la RDS sin snapshot final porque el código tiene `skip_final_snapshot = true`.
+- El backend S3 y el OIDC provider/roles no se administran desde `iac` y no se borran con este destroy.
