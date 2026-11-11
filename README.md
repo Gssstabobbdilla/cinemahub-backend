@@ -1,6 +1,10 @@
-# CinemaHub — Apply/Destroy desde GitHub Actions
+# Infraestructura — Semana 9 - Apply/Destroy desde GitHub Actions
 
-Este kit agrega dos workflows manuales. El workflow de validación/plan que ya existe (`.github/workflows/deploy.yml`) se mantiene.
+La idea de este trabajo es ver cómo podemos utilizar GitHub Actions para automatizar el ciclo de vida de nuestra infraestructura.
+
+Se implementará workflows que permitan ejecutar las operaciones ´terraform apply´ y ´terraform destroy´ desde GitHub Actions, automatizando tanto la creación como la eliminación de los recursos de infraestructura.
+
+Para hacer este trabajo, utilizaremos OIDC como mecanismo de autenticación entre GitHub Actions y aws. Esto nos permitirá obtener credenciales temporales sin necesidad de almacenar claves de acceso permanentes como secretos dentro de este repositorio.
 
 ## Flujo
 
