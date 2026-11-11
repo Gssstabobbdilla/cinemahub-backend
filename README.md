@@ -5,11 +5,9 @@ Este kit agrega dos workflows manuales. El workflow de validación/plan que ya e
 ## Flujo
 
 - Push a `development`: el workflow existente ejecuta `fmt`, `init`, `validate` y `plan`.
-- Actions → `Terraform Apply - Dev`: el usuario selecciona `APPLY`. El job genera un plan con el rol de lectura y luego aplica ese mismo plan con el rol de despliegue.
-- Actions → `Terraform Destroy - Dev`: el usuario selecciona `DESTROY`. El job genera un plan de destrucción con el rol de lectura y luego ejecuta ese plan con el rol de despliegue.
-- Ambos workflows solo permiten la rama `development`, usan OIDC, el mismo backend S3 y el grupo de concurrencia `terraform-dev`.
-
-La selección `APPLY`/`DESTROY` es una confirmación manual explícita. No hay aprobación de Environment adicional en estos YAML porque el Environment `dev` actual también lo usa el workflow automático de plan. Para añadir revisores humanos, habría que crear un environment separado y ajustar el trust policy OIDC.
+- `Terraform Apply - Dev`: el usuario selecciona `APPLY`. El job genera un plan con el rol de lectura y luego aplica ese mismo plan con el rol de despliegue.
+- `Terraform Destroy - Dev`: el usuario selecciona `DESTROY`. El job genera un plan de destrucción con el rol de lectura y luego ejecuta ese plan con el rol de despliegue.
+- Ambos workflows solo permiten la rama `development`, usan OIDC, el mismo S3 y el grupo de concurrencia `terraform-dev`.
 
 ## Archivos
 
@@ -36,7 +34,7 @@ aws accessanalyzer validate-policy `
   --no-cli-pager
 ```
 
-Revisa que no haya hallazgos de tipo `ERROR` antes de continuar. Las recomendaciones sobre comodines de lectura deben evaluarse según el alcance previsto.
+Revisa que no haya hallazgos de tipo `ERROR` antes de continuar. 
 
 ```powershell
 aws iam create-policy `
@@ -90,8 +88,7 @@ aws iam attach-role-policy `
   --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-deploy-dev-policy
 ```
 
-El trust policy limita la asunción al repositorio `Gssstabobbdilla/cinemahub-backend`, usando su subject OIDC inmutable y el Environment `dev`, tal como aparece en el rol actual. No cambies el nombre del environment sin actualizar el trust policy.
-
+El trust policy limita la asunción al repositorio, usando su subject OIDC inmutable y el Environment `dev`
 Verificar:
 
 ```powershell
@@ -106,8 +103,6 @@ El ARN esperado del nuevo rol es:
 
 ## 3. Incorporar los workflows al repositorio
 
-Copia los dos archivos `.yml` del kit a `.github/workflows/` del repositorio.
-
 Desde la raíz del repo:
 
 ```powershell
@@ -121,21 +116,11 @@ git commit -m "feat(ci): add manual terraform apply and destroy workflows"
 git push origin development
 ```
 
-Los archivos de workflow manual deben estar también en la rama predeterminada para que GitHub habilite `workflow_dispatch`. Este repositorio tiene `main` como rama predeterminada. Abre un Pull Request `development` → `main` y fusiónalo; luego, en Actions → Run workflow, selecciona `development` como la rama de ejecución.
+Los archivos de workflow manual deben estar también en la rama predeterminada para que GitHub habilite `workflow_dispatch`. 
 
 ## 4. Ejecutar
 
 - Apply: Actions → `Terraform Apply - Dev` → Run workflow → branch `development` → confirmation `APPLY`.
 - Destroy: Actions → `Terraform Destroy - Dev` → Run workflow → branch `development` → confirmation `DESTROY`.
 
-Los pasos muestran el plan en el resumen del workflow y, en el mismo run, aplican inmediatamente el plan guardado. La confirmación manual `APPLY` o `DESTROY` se da al iniciar el workflow; no hay una segunda pausa de aprobación después de ver el plan. El propio run solo admite la rama `development`.
-
-## Seguridad y límites
-
-- No se almacenan claves IAM de larga duración en GitHub Secrets; la autenticación usa OIDC. El workflow de plan automático conserva `vars.AWS_ROLE_ARN`; el ARN del rol de despliegue está explícito en los YAML y no es un secreto.
-- El rol de plan puede leer el state y escribir/borrar solo el objeto de lock `.tflock`; no puede escribir el state ni modificar recursos AWS.
-- El rol de despliegue puede gestionar recursos de red EC2 solo en `us-east-2`, RDS solo con nombres `cinemahub-dev-*`, funciones Lambda `cinemahub-dev-*`, la API Gateway del ámbito regional y únicamente el rol de ejecución Lambda especificado. `iam:PassRole` solo permite pasar ese rol a `lambda.amazonaws.com`. Para `manage_master_user_password = true`, solo puede crear y etiquetar secretos con nombre `rds!db-*`; no tiene permiso para leer su valor. `kms:DescribeKey` es de solo lectura y está limitado a `us-east-2` para que RDS pueda usar las claves administradas predeterminadas.
-- El policy de EC2 usa `Resource: "*"` en varias acciones de creación/describe porque las APIs de EC2 requieren ese alcance para ciertas operaciones; está limitado por acciones explícitas y `aws:RequestedRegion`.
-- Los planes guardados (`tfplan`) no se suben a artifacts; se crean y aplican en el mismo job. Los valores sensibles que Terraform marca como sensitive quedan redactados en `terraform show`.
-- `terraform destroy` elimina la RDS sin snapshot final porque el código tiene `skip_final_snapshot = true`.
-- El backend S3 y el OIDC provider/roles no se administran desde `iac` y no se borran con este destroy.
+Los pasos muestran el plan en el resumen del workflow y, en el mismo run, aplican inmediatamente el plan guardado. La confirmación manual `APPLY` o `DESTROY` se da al iniciar el workflow. El propio run solo admite la rama `development`.
