@@ -9,6 +9,10 @@ resource "aws_lambda_function" "realizar_pago" {
   timeout          = var.lambda_timeout
   reserved_concurrent_executions = 5
 
+  tracing_config {
+   mode = "Active"
+  }
+
   vpc_config {
     subnet_ids         = aws_subnet.private[*].id
     security_group_ids = [aws_security_group.lambda.id]
@@ -20,4 +24,3 @@ resource "aws_lambda_function" "realizar_pago" {
     Name = "${var.project_name}-${local.env}-realizar-pago"
   })
 }
-
