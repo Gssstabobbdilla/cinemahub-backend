@@ -15,6 +15,7 @@ resource "aws_db_instance" "cinemahub" {
   vpc_security_group_ids = [aws_security_group.rds.id]
 
   auto_minor_version_upgrade = true
+  copy_tags_to_snapshot = true
   storage_encrypted   = true
   deletion_protection = false
   skip_final_snapshot = true
