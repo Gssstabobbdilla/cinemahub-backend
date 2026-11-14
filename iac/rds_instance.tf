@@ -14,6 +14,8 @@ resource "aws_db_instance" "cinemahub" {
   db_subnet_group_name   = aws_db_subnet_group.cinemahub.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
+  auto_minor_version_upgrade = true
+  copy_tags_to_snapshot = true
   storage_encrypted   = true
   deletion_protection = false
   skip_final_snapshot = true
