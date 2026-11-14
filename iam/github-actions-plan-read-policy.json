@@ -91,6 +91,32 @@
         "iam:ListRoleTags"
       ],
       "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-lambda-execution-role"
+    },
+    {
+      "Sid": "TerraformCloudWatchLogGroupDescribe",
+      "Effect": "Allow",
+      "Action": [
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformApiAccessLogGroupTagsRead",
+      "Effect": "Allow",
+      "Action": [
+        "logs:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access:*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
     }
   ]
 }

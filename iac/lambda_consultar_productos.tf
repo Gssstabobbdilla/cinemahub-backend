@@ -7,6 +7,7 @@ resource "aws_lambda_function" "consultar_productos" {
   source_code_hash = data.archive_file.lambda_empty.output_base64sha256
   memory_size      = var.lambda_memory_size
   timeout          = var.lambda_timeout
+  reserved_concurrent_executions = 5
 
   vpc_config {
     subnet_ids         = aws_subnet.private[*].id
