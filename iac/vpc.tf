@@ -8,3 +8,11 @@ resource "aws_vpc" "cinemahub" {
     Environment = local.env
   }
 }
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.cinemahub.id
+
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-${local.env}-default-sg-restricted"
+  })
+}
