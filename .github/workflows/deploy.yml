@@ -36,6 +36,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Build Java Lambda package
+        working-directory: ./backend
+        run: bash ./mvnw -B -Paws-lambda -DskipTests package
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:

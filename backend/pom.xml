@@ -20,7 +20,12 @@
 
     <properties>
         <java.version>21</java.version>
+        <skip.repackage>false</skip.repackage>
     </properties>
+
+    <dependencyManagement>
+        <dependencies><dependency><groupId>software.amazon.awssdk</groupId><artifactId>bom</artifactId><version>2.27.21</version><type>pom</type><scope>import</scope></dependency></dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
@@ -103,6 +108,9 @@
             <scope>runtime</scope>
         </dependency>
 
+    
+        <dependency><groupId>com.amazonaws</groupId><artifactId>aws-lambda-java-core</artifactId><version>1.2.3</version></dependency>
+        <dependency><groupId>software.amazon.awssdk</groupId><artifactId>secretsmanager</artifactId></dependency>
     </dependencies>
 
     <build>
@@ -110,8 +118,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration><skip>${skip.repackage}</skip></configuration>
             </plugin>
         </plugins>
     </build>
 
+
+    <profiles><profile><id>aws-lambda</id><properties><skip.repackage>true</skip.repackage></properties><build><plugins>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.0</version><executions><execution><phase>package</phase><goals><goal>shade</goal></goals><configuration>
+        <artifactSet><includes><include>com.amazonaws:aws-lambda-java-core</include><include>software.amazon.awssdk:*</include><include>org.postgresql:postgresql</include><include>com.fasterxml.jackson.core:*</include><include>com.fasterxml.jackson.datatype:*</include><include>io.netty:*</include><include>org.apache.httpcomponents:*</include><include>org.apache.httpcomponents.core5:*</include><include>org.reactivestreams:*</include><include>commons-codec:commons-codec</include><include>commons-logging:commons-logging</include></includes></artifactSet><shadedArtifactAttached>true</shadedArtifactAttached><shadedClassifierName>aws-lambda</shadedClassifierName><createDependencyReducedPom>false</createDependencyReducedPom>
+        
+        <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude></excludes></filter></filters>
+      </configuration></execution></executions></plugin>
+    </plugins></build></profile></profiles>
 </project>
+
