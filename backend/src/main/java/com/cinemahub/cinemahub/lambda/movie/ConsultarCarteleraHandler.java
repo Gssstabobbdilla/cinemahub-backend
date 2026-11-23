@@ -1,24 +1,22 @@
 package com.cinemahub.cinemahub.lambda.movie;
 
+import com.cinemahub.cinemahub.lambda.shared.DatabaseConnection;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
-import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 
 public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Object>,Map<String,Object>> {
   private static final ObjectMapper JSON = new ObjectMapper().findAndRegisterModules();
-  private static final SecretsManagerClient SECRETS = SecretsManagerClient.create();
   private static final String SQL = """
       SELECT m.id,m.title,m.synopsis,m.duration,m.release_date,m.poster_url,m.trailer_url,m.status,
              c.id classification_id,c.code classification_code,c.description classification_description
       FROM movies m JOIN classifications c ON c.id=m.classification_id
       """;
-  private volatile Credentials credentials;
 
   @Override public Map<String,Object> handleRequest(Map<String,Object> event, Context context) {
     String path = Objects.toString(event.get("rawPath"), "");
@@ -35,7 +33,7 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
 
   private List<Map<String,Object>> find(String status) throws Exception {
     String sql = SQL + (status == null ? " ORDER BY m.id" : " WHERE m.status=? ORDER BY m.id");
-    try (Connection c=connect(); PreparedStatement s=c.prepareStatement(sql)) {
+    try (Connection c=DatabaseConnection.open(); PreparedStatement s=c.prepareStatement(sql)) {
       if (status != null) s.setString(1,status);
       try (ResultSet r=s.executeQuery()) {
         List<Map<String,Object>> out=new ArrayList<>();
@@ -58,21 +56,6 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
     }
   }
 
-  private Connection connect() throws Exception {
-    String url="jdbc:postgresql://%s:%s/%s?sslmode=verify-full".formatted(env("DB_HOST"),env("DB_PORT"),env("DB_NAME"));
-    Credentials c=credentials();
-    return DriverManager.getConnection(url,c.username(),c.password());
-  }
-  private Credentials credentials() throws Exception {
-    if(credentials==null) synchronized(this) {
-      if(credentials==null) {
-        String secret=SECRETS.getSecretValue(GetSecretValueRequest.builder().secretId(env("DB_SECRET_ARN")).build()).secretString();
-        Map<String,String> values=JSON.readValue(secret,new TypeReference<>() {});
-        credentials=new Credentials(values.get("username"),values.get("password"));
-      }
-    }
-    return credentials;
-  }
   private static String env(String key) {
     String value=System.getenv(key);
     if(value==null||value.isBlank()) throw new IllegalStateException("Falta la variable "+key);
@@ -91,5 +74,5 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
   private static Map<String,Object> response(int status,String body) {
     return Map.of("statusCode",status,"headers",Map.of("content-type","application/json; charset=utf-8"),"isBase64Encoded",false,"body",body);
   }
-  private record Credentials(String username,String password) {}
 }
+

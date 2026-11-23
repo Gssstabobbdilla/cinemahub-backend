@@ -7,6 +7,13 @@ locals {
       function_name = aws_lambda_function.consultar_cartelera.function_name
       invoke_arn    = aws_lambda_function.consultar_cartelera.invoke_arn
     }
+    buscar_funciones = {
+      method        = "GET"
+      path          = "/showtimes"
+      route_key     = "GET /showtimes"
+      function_name = aws_lambda_function.buscar_funciones.function_name
+      invoke_arn    = aws_lambda_function.buscar_funciones.invoke_arn
+    }
     consultar_asientos = {
       method        = "GET"
       path          = "/showtimes/{showtimeId}/seats"
@@ -58,9 +65,6 @@ resource "aws_apigatewayv2_integration" "core_routes" {
 
 resource "aws_apigatewayv2_route" "core_routes" {
   for_each = local.core_lambda_routes
-
-  # Estas rutas quedan sin authorizer hasta completar Cognito (fase 4).
-  # No exponer operaciones privadas antes de integrar autenticación y autorización.
   api_id             = aws_apigatewayv2_api.cinemahub.id
   route_key          = each.value.route_key
   authorization_type = "NONE"
