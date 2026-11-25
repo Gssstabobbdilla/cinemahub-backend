@@ -12,14 +12,14 @@ locals {
       path = "/showtimes/{id}"
       route_key = "GET /showtimes/{id}"
       function_name = aws_lambda_function.consultar_funcion.function_name
-      invoke_arn    = aws_lambda_function.consultar_funcion.invoke_arn
+      invoke_arn = aws_lambda_function.consultar_funcion.invoke_arn
     }
     buscar_funciones = {
       method = "GET"
       path = "/showtimes"
       route_key = "GET /showtimes"
       function_name = aws_lambda_function.buscar_funciones.function_name
-      invoke_arn    = aws_lambda_function.buscar_funciones.invoke_arn
+      invoke_arn = aws_lambda_function.buscar_funciones.invoke_arn
     }
     consultar_asientos = {
       method = "GET"
@@ -56,6 +56,13 @@ locals {
       function_name = aws_lambda_function.consultar_asientos_reserva.function_name
       invoke_arn = aws_lambda_function.consultar_asientos_reserva.invoke_arn
     }
+    cancelar_reserva = {
+      method = "POST"
+      path = "/reservations/{id}/cancel"
+      route_key = "POST /reservations/{id}/cancel"
+      function_name = aws_lambda_function.liberar_asientos.function_name
+      invoke_arn = aws_lambda_function.liberar_asientos.invoke_arn
+    }
     consultar_productos = {
       method = "GET"
       path = "/products"
@@ -79,7 +86,7 @@ resource "aws_apigatewayv2_integration" "core_routes" {
   api_id = aws_apigatewayv2_api.cinemahub.id
   integration_type = "AWS_PROXY"
   integration_method = "POST"
-  integration_uri = each.value.invoke_arn
+  integration_uri= each.value.invoke_arn
   payload_format_version = "2.0"
   description = "Integracion HTTP API con Lambda ${each.key}"
 }
@@ -101,6 +108,8 @@ resource "aws_lambda_permission" "allow_apigateway_core" {
   principal = "apigateway.amazonaws.com"
   source_arn = "${aws_apigatewayv2_api.cinemahub.execution_arn}/*/${each.value.method}${each.value.path}"
 }
+
+
 
 
 
