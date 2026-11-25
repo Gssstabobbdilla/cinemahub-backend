@@ -1,38 +1,41 @@
 resource "aws_lambda_function" "consultar_reservas" {
   function_name = "${var.project_name}-${local.env}-consultar-reservas"
-  role  = aws_iam_role.lambda_execution.arn
-  handler  = "index.handler"
-  runtime  = var.lambda_runtime
-  filename  = data.archive_file.lambda_empty.output_path
-  source_code_hash = data.archive_file.lambda_empty.output_base64sha256
-  memory_size = var.lambda_memory_size
-  timeout   = var.lambda_timeout
-  #  reserved_concurrent_executions = 5
-  #  code_signing_config_arn  = aws_lambda_code_signing_config.this.arn
+  role = aws_iam_role.lambda_execution.arn
+  handler = "com.cinemahub.cinemahub.lambda.reservation.ConsultarReservasHandler::handleRequest"
+  runtime = "java21"
+  filename = "${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar"
+  source_code_hash = filebase64sha256("${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar")
+  memory_size = max(var.lambda_memory_size, 512)
+  timeout = max(var.lambda_timeout, 30)
+  reserved_concurrent_executions = 5
+  kms_key_arn = aws_kms_key.logs_cmk.arn
 
   tracing_config {
     mode = "Active"
   }
 
   vpc_config {
-    subnet_ids         = aws_subnet.private[*].id
+    subnet_ids = aws_subnet.private[*].id
     security_group_ids = [aws_security_group.lambda.id]
   }
 
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq.arn
   }
-  kms_key_arn = aws_kms_key.logs_cmk.arn
+
   environment {
     variables = {
-      DB_HOST= aws_db_proxy.cinemahub.endpoint
+      DB_HOST = aws_db_proxy.cinemahub.endpoint
       DB_PORT = tostring(var.db_port)
-      DB_NAME  = var.db_name
+      DB_NAME = var.db_name
       DB_SECRET_ARN = aws_db_instance.cinemahub.master_user_secret[0].secret_arn
     }
   }
 
-  depends_on = [aws_iam_role_policy_attachment.lambda_vpc_access]
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc_access,
+    aws_iam_role_policy.lambda_read_rds_secret
+  ]
 
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-${local.env}-consultar-reservas"
