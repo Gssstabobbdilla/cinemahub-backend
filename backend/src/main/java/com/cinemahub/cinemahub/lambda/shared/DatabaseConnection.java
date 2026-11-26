@@ -17,7 +17,7 @@ public final class DatabaseConnection {
   private DatabaseConnection() {}
 
   public static Connection open() throws Exception {
-    String url = "jdbc:postgresql://%s:%s/%s?sslmode=verify-full&connectTimeout=5&socketTimeout=20".formatted(
+    String url = "jdbc:postgresql://%s:%s/%s?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory&connectTimeout=5&socketTimeout=20".formatted(
         required("DB_HOST"), required("DB_PORT"), required("DB_NAME"));
     Credentials db = credentials();
     return DriverManager.getConnection(url, db.username(), db.password());

@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "frontend" {
   bucket = "${var.project_name}-${local.env}-frontend-${data.aws_caller_identity.current.account_id}"
-  force_destroy = false
+  force_destroy = true
 
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-${local.env}-frontend"

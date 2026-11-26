@@ -26,7 +26,12 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
       return error(400, "Bad Request", "El parámetro status no es válido");
     try { return response(200, JSON.writeValueAsString(find(status))); }
     catch (Exception e) {
-      context.getLogger().log("Error consultando cartelera: " + e.getClass().getSimpleName());
+      if (e instanceof SQLException sql) {
+        context.getLogger().log("Error consultando cartelera: SQLState=" + sql.getSQLState()
+            + ", mensaje=" + sql.getMessage());
+      } else {
+        context.getLogger().log("Error consultando cartelera: " + e.getClass().getSimpleName());
+      }
       return error(500, "Internal Server Error", "No se pudo consultar la cartelera");
     }
   }

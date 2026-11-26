@@ -7,7 +7,6 @@ resource "aws_lambda_function" "consultar_reserva" {
   source_code_hash = filebase64sha256("${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar")
   memory_size = max(var.lambda_memory_size, 512)
   timeout = max(var.lambda_timeout, 30)
-  reserved_concurrent_executions = 5
   kms_key_arn = aws_kms_key.logs_cmk.arn
 
   tracing_config {

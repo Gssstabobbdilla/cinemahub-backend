@@ -4,13 +4,10 @@ variable "frontend_domain_name" {
   default     = ""
 }
 
-resource "aws_route53_zone" "frontend" {
-  count = var.frontend_domain_name == "" ? 0 : 1
-  name  = var.frontend_domain_name
-
-  tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${local.env}-frontend-zone"
-  })
+data "aws_route53_zone" "frontend" {
+  count        = var.frontend_domain_name == "" ? 0 : 1
+  name         = "${var.frontend_domain_name}."
+  private_zone = false
 }
 
 resource "aws_acm_certificate" "frontend" {
@@ -38,7 +35,7 @@ resource "aws_route53_record" "certificate_validation" {
     }
   }
 
-  zone_id         = aws_route53_zone.frontend[0].zone_id
+  zone_id         = data.aws_route53_zone.frontend[0].zone_id
   name            = each.value.name
   type            = each.value.type
   ttl             = 60
@@ -55,7 +52,7 @@ resource "aws_acm_certificate_validation" "frontend" {
 
 resource "aws_route53_record" "frontend_ipv4" {
   count   = var.frontend_domain_name == "" ? 0 : 1
-  zone_id = aws_route53_zone.frontend[count.index].zone_id
+  zone_id = data.aws_route53_zone.frontend[count.index].zone_id
   name    = var.frontend_domain_name
   type    = "A"
 
@@ -68,7 +65,7 @@ resource "aws_route53_record" "frontend_ipv4" {
 
 resource "aws_route53_record" "frontend_ipv6" {
   count   = var.frontend_domain_name == "" ? 0 : 1
-  zone_id = aws_route53_zone.frontend[count.index].zone_id
+  zone_id = data.aws_route53_zone.frontend[count.index].zone_id
   name    = var.frontend_domain_name
   type    = "AAAA"
 
@@ -80,6 +77,6 @@ resource "aws_route53_record" "frontend_ipv6" {
 }
 
 output "frontend_route53_name_servers" {
-  description = "Nameservers para delegar el dominio en el registrador"
-  value       = var.frontend_domain_name == "" ? [] : aws_route53_zone.frontend[0].name_servers
+  description = "Nameservers de la zona DNS existente en Route 53"
+  value       = var.frontend_domain_name == "" ? [] : data.aws_route53_zone.frontend[0].name_servers
 }
