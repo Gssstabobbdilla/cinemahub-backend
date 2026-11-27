@@ -146,6 +146,94 @@
           "aws:RequestedRegion": "us-east-2"
         }
       }
+    },
+    {
+      "Sid": "TerraformProjectIamRoleRead",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListRoleTags"
+      ],
+      "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-*"
+    },
+    {
+      "Sid": "TerraformBackupRead",
+      "Effect": "Allow",
+      "Action": [
+        "backup:GetBackupPlan",
+        "backup:DescribeBackupVault",
+        "backup:ListTags",
+        "backup:GetBackupSelection",
+        "backup:ListBackupPlans",
+        "backup:ListBackupSelections"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformElastiCacheSubnetRead",
+      "Effect": "Allow",
+      "Action": "elasticache:DescribeCacheSubnetGroups",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformCloudFrontRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:GetOriginAccessControl",
+        "cloudfront:DescribeFunction"
+      ],
+      "Resource": [
+        "arn:aws:cloudfront::829999272931:origin-access-control/*",
+        "arn:aws:cloudfront::829999272931:function/cinemahub-dev-*"
+      ]
+    },
+    {
+      "Sid": "TerraformFrontendBucketSettingsRead",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketPublicAccessBlock",
+        "s3:GetBucketOwnershipControls",
+        "s3:GetBucketVersioning",
+        "s3:GetEncryptionConfiguration"
+      ],
+      "Resource": "arn:aws:s3:::cinemahub-dev-frontend-829999272931"
+    },
+    {
+      "Sid": "TerraformWAFRead",
+      "Effect": "Allow",
+      "Action": "wafv2:GetWebACL",
+      "Resource": "arn:aws:wafv2:us-east-1:829999272931:global/webacl/cinemahub-dev-*/*"
+    },
+    {
+      "Sid": "TerraformKMSRead",
+      "Effect": "Allow",
+      "Action": "kms:DescribeKey",
+      "Resource": "arn:aws:kms:us-east-2:829999272931:key/*"
+    },
+    {
+      "Sid": "TerraformSignerProfileRead",
+      "Effect": "Allow",
+      "Action": "signer:GetSigningProfile",
+      "Resource": "arn:aws:signer:us-east-2:829999272931:/signing-profiles/terraform_*"
+    },
+    {
+      "Sid": "TerraformRoute53HostedZoneTagsRead",
+      "Effect": "Allow",
+      "Action": "route53:ListTagsForResource",
+      "Resource": "arn:aws:route53:::hostedzone/Z05624012OOAP4H2RG9Y7"
     }
   ]
 }
