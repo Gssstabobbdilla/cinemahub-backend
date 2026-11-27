@@ -14,8 +14,9 @@ resource "aws_db_parameter_group" "cinemahub_pg" {
   }
 
   parameter {
-    name  = "rds.force_ssl"
-    value = "1"
+    name         = "rds.force_ssl"
+    value        = "1"
+    apply_method = "pending-reboot"
   }
 
   tags = local.common_tags
