@@ -68,6 +68,7 @@
       "Action": [
         "lambda:GetFunction",
         "lambda:GetFunctionConfiguration",
+        "lambda:GetFunctionCodeSigningConfig",
         "lambda:GetPolicy",
         "lambda:ListTags",
         "lambda:ListVersionsByFunction"
@@ -140,7 +141,10 @@
       "Action": [
         "logs:ListTagsForResource"
       ],
-      "Resource": "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access:*",
+      "Resource": [
+        "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access",
+        "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access:*"
+      ],
       "Condition": {
         "StringEquals": {
           "aws:RequestedRegion": "us-east-2"
@@ -180,8 +184,17 @@
     {
       "Sid": "TerraformElastiCacheSubnetRead",
       "Effect": "Allow",
-      "Action": "elasticache:DescribeCacheSubnetGroups",
-      "Resource": "*",
+      "Action": [
+        "elasticache:DescribeCacheSubnetGroups",
+        "elasticache:DescribeReplicationGroups",
+        "elasticache:DescribeCacheClusters",
+        "elasticache:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:elasticache:us-east-2:829999272931:subnetgroup:cinemahub-dev-*",
+        "arn:aws:elasticache:us-east-2:829999272931:replicationgroup:cinemahub-dev-*",
+        "arn:aws:elasticache:us-east-2:829999272931:cluster:cinemahub-dev-*"
+      ],
       "Condition": {
         "StringEquals": {
           "aws:RequestedRegion": "us-east-2"
@@ -193,10 +206,14 @@
       "Effect": "Allow",
       "Action": [
         "cloudfront:GetOriginAccessControl",
-        "cloudfront:DescribeFunction"
+        "cloudfront:DescribeFunction",
+        "cloudfront:GetFunction",
+        "cloudfront:ListTagsForResource",
+        "cloudfront:GetDistribution"
       ],
       "Resource": [
         "arn:aws:cloudfront::829999272931:origin-access-control/*",
+        "arn:aws:cloudfront::829999272931:distribution/*",
         "arn:aws:cloudfront::829999272931:function/cinemahub-dev-*"
       ]
     },
@@ -207,21 +224,70 @@
         "s3:GetBucketPublicAccessBlock",
         "s3:GetBucketOwnershipControls",
         "s3:GetBucketVersioning",
-        "s3:GetEncryptionConfiguration"
+        "s3:GetEncryptionConfiguration",
+        "s3:GetBucketPolicy"
       ],
       "Resource": "arn:aws:s3:::cinemahub-dev-frontend-829999272931"
     },
     {
       "Sid": "TerraformWAFRead",
       "Effect": "Allow",
-      "Action": "wafv2:GetWebACL",
+      "Action": [
+        "wafv2:GetWebACL",
+        "wafv2:ListTagsForResource"
+      ],
       "Resource": "arn:aws:wafv2:us-east-1:829999272931:global/webacl/cinemahub-dev-*/*"
     },
     {
       "Sid": "TerraformKMSRead",
       "Effect": "Allow",
-      "Action": "kms:DescribeKey",
+      "Action": [
+        "kms:DescribeKey",
+        "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
+        "kms:ListResourceTags"
+      ],
       "Resource": "arn:aws:kms:us-east-2:829999272931:key/*"
+    },
+    {
+      "Sid": "TerraformKMSAliasRead",
+      "Effect": "Allow",
+      "Action": "kms:ListAliases",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformSQSQueueRead",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:ListQueueTags"
+      ],
+      "Resource": "arn:aws:sqs:us-east-2:829999272931:cinemahub-dev-*"
+    },
+    {
+      "Sid": "TerraformVpcFlowLogGroupTagsRead",
+      "Effect": "Allow",
+      "Action": "logs:ListTagsForResource",
+      "Resource": "arn:aws:logs:us-east-2:829999272931:log-group:/aws/vpc/cinemahub-dev-flow-logs",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformLambdaCodeSigningConfigRead",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetCodeSigningConfig",
+        "lambda:ListTags"
+      ],
+      "Resource": "arn:aws:lambda:us-east-2:829999272931:code-signing-config:*"
     },
     {
       "Sid": "TerraformSignerProfileRead",

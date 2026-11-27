@@ -46,7 +46,15 @@ jobs:
 
       - name: Build Java Lambda package
         working-directory: ./backend
-        run: bash ./mvnw -B -Paws-lambda -DskipTests package
+        run: |
+          for attempt in 1 2 3; do
+            if bash ./mvnw -B -Paws-lambda -DskipTests package; then
+              exit 0
+            fi
+            echo "Maven build failed on attempt ${attempt}/3; retrying in 10 seconds..."
+            sleep 10
+          done
+          exit 1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
