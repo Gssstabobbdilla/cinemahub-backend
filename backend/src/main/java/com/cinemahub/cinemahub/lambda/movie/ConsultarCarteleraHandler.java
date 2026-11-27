@@ -24,7 +24,16 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
     String status = query(event, "status");
     if (status != null && !List.of("ACTIVE","INACTIVE","COMING_SOON","ARCHIVED").contains(status))
       return error(400, "Bad Request", "El parámetro status no es válido");
-    try { return response(200, JSON.writeValueAsString(find(status))); }
+    try {
+      if (path.matches(".*/movies/[^/]+$")) {
+        String id = path.substring(path.lastIndexOf('/') + 1);
+        if (!id.matches("\\d+")) return error(400, "Bad Request", "El identificador de película no es válido");
+        Map<String,Object> movie = findById(Long.parseLong(id));
+        return movie == null ? error(404, "Not Found", "No se encontró la película")
+            : response(200, JSON.writeValueAsString(movie));
+      }
+      return response(200, JSON.writeValueAsString(find(status)));
+    }
     catch (Exception e) {
       if (e instanceof SQLException sql) {
         context.getLogger().log("Error consultando cartelera: SQLState=" + sql.getSQLState()
@@ -57,6 +66,27 @@ public class ConsultarCarteleraHandler implements RequestHandler<Map<String,Obje
           out.add(movie);
         }
         return out;
+      }
+    }
+  }
+
+  private Map<String,Object> findById(Long id) throws Exception {
+    try (Connection c=DatabaseConnection.open(); PreparedStatement s=c.prepareStatement(SQL + " WHERE m.id=?")) {
+      s.setLong(1,id);
+      try (ResultSet r=s.executeQuery()) {
+        if (!r.next()) return null;
+        Map<String,Object> classification=new HashMap<>();
+        classification.put("id",r.getLong("classification_id"));
+        classification.put("code",r.getString("classification_code"));
+        classification.put("description",r.getString("classification_description"));
+        Map<String,Object> movie=new HashMap<>();
+        movie.put("id",r.getLong("id")); movie.put("title",r.getString("title"));
+        movie.put("synopsis",r.getString("synopsis")); movie.put("duration",r.getInt("duration"));
+        java.sql.Date release=r.getDate("release_date");
+        movie.put("releaseDate",release==null?null:release.toLocalDate().toString());
+        movie.put("posterUrl",r.getString("poster_url")); movie.put("trailerUrl",r.getString("trailer_url"));
+        movie.put("classification",classification); movie.put("status",r.getString("status"));
+        return movie;
       }
     }
   }

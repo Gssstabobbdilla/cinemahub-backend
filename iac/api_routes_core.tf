@@ -7,6 +7,13 @@ locals {
       function_name = aws_lambda_function.consultar_cartelera.function_name
       invoke_arn    = aws_lambda_function.consultar_cartelera.invoke_arn
     }
+    consultar_pelicula = {
+      method        = "GET"
+      path          = "/movies/{id}"
+      route_key     = "GET /movies/{id}"
+      function_name = aws_lambda_function.consultar_cartelera.function_name
+      invoke_arn    = aws_lambda_function.consultar_cartelera.invoke_arn
+    }
     consultar_funcion = {
       method        = "GET"
       path          = "/showtimes/{id}"
