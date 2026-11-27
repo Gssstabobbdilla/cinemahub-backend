@@ -35,6 +35,9 @@ build/
 # Configuracion local del backend Terraform
 **/backend.hcl
 
+# Terraform saved plans can contain sensitive values and should stay local.
+/iac/tfplan*
+
 
 .terraform/
 **/.terraform/*

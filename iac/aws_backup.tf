@@ -8,9 +8,9 @@ resource "aws_backup_plan" "cinemahub" {
   name = "${var.project_name}-${local.env}-rds-daily-backup"
 
   rule {
-    rule_name= "${var.project_name}-${local.env}-rds-daily"
+    rule_name         = "${var.project_name}-${local.env}-rds-daily"
     target_vault_name = aws_backup_vault.cinemahub.name
-    schedule = "cron(0 8 * * ? *)"
+    schedule          = "cron(0 8 * * ? *)"
 
     lifecycle {
       delete_after = 14
@@ -42,25 +42,25 @@ resource "aws_iam_role" "backup" {
 }
 
 resource "aws_iam_role_policy_attachment" "backup" {
-  role = aws_iam_role.backup.name
+  role       = aws_iam_role.backup.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
 }
 
 resource "aws_backup_selection" "cinemahub_rds" {
-  name = "${var.project_name}-${local.env}-rds-selection"
-  plan_id = aws_backup_plan.cinemahub.id
+  name         = "${var.project_name}-${local.env}-rds-selection"
+  plan_id      = aws_backup_plan.cinemahub.id
   iam_role_arn = aws_iam_role.backup.arn
-  resources = [aws_db_instance.cinemahub.arn]
+  resources    = [aws_db_instance.cinemahub.arn]
 
   depends_on = [aws_iam_role_policy_attachment.backup]
 }
 
 output "backup_vault_arn" {
   description = "ARN del vault de AWS Backup para CinemaHub"
-  value = aws_backup_vault.cinemahub.arn
+  value       = aws_backup_vault.cinemahub.arn
 }
 
 output "backup_plan_id" {
   description = "Identificador del plan diario de respaldos de RDS"
-  value = aws_backup_plan.cinemahub.id
+  value       = aws_backup_plan.cinemahub.id
 }
