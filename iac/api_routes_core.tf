@@ -47,7 +47,7 @@ locals {
       path = "/reservations/{id}"
       route_key = "GET /reservations/{id}"
       function_name = aws_lambda_function.consultar_reserva.function_name
-      invoke_arn = aws_lambda_function.consultar_reserva.invoke_arn
+      invoke_arn    = aws_lambda_function.consultar_reserva.invoke_arn
     }
     consultar_asientos_reserva = {
       method = "GET"
@@ -77,12 +77,20 @@ locals {
       function_name = aws_lambda_function.consultar_productos.function_name
       invoke_arn = aws_lambda_function.consultar_productos.invoke_arn
     }
+    agregar_producto_orden = {
+      method = "POST"
+      path = "/orders/{id}/products"
+      route_key = "POST /orders/{id}/products"
+      function_name = aws_lambda_function.agregar_producto_orden.function_name
+      invoke_arn    = aws_lambda_function.agregar_producto_orden.invoke_arn
+    }
+
     realizar_pago = {
       method = "POST"
       path = "/orders/{orderId}/payments"
       route_key = "POST /orders/{orderId}/payments"
       function_name = aws_lambda_function.realizar_pago.function_name
-      invoke_arn    = aws_lambda_function.realizar_pago.invoke_arn
+      invoke_arn = aws_lambda_function.realizar_pago.invoke_arn
     }
   }
 }
@@ -115,6 +123,7 @@ resource "aws_lambda_permission" "allow_apigateway_core" {
   principal = "apigateway.amazonaws.com"
   source_arn = "${aws_apigatewayv2_api.cinemahub.execution_arn}/*/${each.value.method}${each.value.path}"
 }
+
 
 
 

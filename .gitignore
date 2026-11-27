@@ -44,6 +44,6 @@ build/
 *.tfvars.json
 .terraform.tfstate.d/
 
-**/iac/lambdas/README.md
+**/lambdas/
 API_CONTRACT.md
 result.xml
