@@ -20,6 +20,7 @@ Para hacer este trabajo, utilizaremos OIDC como mecanismo de autenticación entr
 - `iam/github-actions-plan-read-policy.json`
 - `iam/github-actions-deploy-trust-policy.json`
 - `iam/github-actions-deploy-policy.json`
+- `iam/github-actions-deploy-domain-policy.json`
 
 ## 1. Validar e instalar la política de solo lectura al rol de plan
 
@@ -90,6 +91,15 @@ aws iam create-role `
 aws iam attach-role-policy `
   --role-name lab09-github-actions-deploy-dev `
   --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-deploy-dev-policy
+
+aws iam create-policy `
+  --policy-name lab09-github-actions-deploy-domain-policy `
+  --description "Route 53 and ACM permissions for CinemaHub dev domain" `
+  --policy-document file://iam/github-actions-deploy-domain-policy.json
+
+aws iam attach-role-policy `
+  --role-name lab09-github-actions-deploy-dev `
+  --policy-arn arn:aws:iam::829999272931:policy/lab09-github-actions-deploy-domain-policy
 ```
 
 El trust policy limita la asunción al repositorio, usando su subject OIDC inmutable y el Environment `dev`

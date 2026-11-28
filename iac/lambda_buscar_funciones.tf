@@ -1,20 +1,20 @@
 resource "aws_lambda_function" "buscar_funciones" {
-  function_name = "${var.project_name}-${local.env}-buscar-funciones"
-  role = aws_iam_role.lambda_execution.arn
-  handler = "com.cinemahub.cinemahub.lambda.showtime.BuscarFuncionesHandler::handleRequest"
-  runtime= "java21"
-  filename = "${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar"
-  source_code_hash  = filebase64sha256("${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar")
-  memory_size  = max(var.lambda_memory_size, 512)
-  timeout= max(var.lambda_timeout, 30)
-  kms_key_arn  = aws_kms_key.logs_cmk.arn
+  function_name    = "${var.project_name}-${local.env}-buscar-funciones"
+  role             = aws_iam_role.lambda_execution.arn
+  handler          = "com.cinemahub.cinemahub.lambda.showtime.BuscarFuncionesHandler::handleRequest"
+  runtime          = "java21"
+  filename         = "${path.module}/../backend/target/cinemahub-0.0.1-SNAPSHOT-aws-lambda.jar"
+  source_code_hash = local.java_lambda_package_hash
+  memory_size      = max(var.lambda_memory_size, 512)
+  timeout          = max(var.lambda_timeout, 30)
+  kms_key_arn      = aws_kms_key.logs_cmk.arn
 
   tracing_config {
     mode = "Active"
   }
 
   vpc_config {
-    subnet_ids = aws_subnet.private[*].id
+    subnet_ids         = aws_subnet.private[*].id
     security_group_ids = [aws_security_group.lambda.id]
   }
 
@@ -24,9 +24,9 @@ resource "aws_lambda_function" "buscar_funciones" {
 
   environment {
     variables = {
-      DB_HOST = aws_db_proxy.cinemahub.endpoint
-      DB_PORT  = tostring(var.db_port)
-      DB_NAME  = var.db_name
+      DB_HOST       = aws_db_proxy.cinemahub.endpoint
+      DB_PORT       = tostring(var.db_port)
+      DB_NAME       = var.db_name
       DB_SECRET_ARN = aws_db_instance.cinemahub.master_user_secret[0].secret_arn
     }
   }

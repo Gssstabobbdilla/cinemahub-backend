@@ -1,12 +1,12 @@
 resource "aws_lambda_function" "reservar_asientos" {
   function_name    = "${var.project_name}-${local.env}-reservar-asientos"
-  role  = aws_iam_role.lambda_execution.arn
-  handler  = "index.handler"
-  runtime  = var.lambda_runtime
-  filename  = data.archive_file.lambda_empty.output_path
+  role             = aws_iam_role.lambda_execution.arn
+  handler          = "index.handler"
+  runtime          = var.lambda_runtime
+  filename         = data.archive_file.lambda_empty.output_path
   source_code_hash = data.archive_file.lambda_empty.output_base64sha256
-  memory_size = var.lambda_memory_size
-  timeout   = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
+  timeout          = var.lambda_timeout
   #  reserved_concurrent_executions = 5
   #  code_signing_config_arn   = aws_lambda_code_signing_config.this.arn
 
@@ -25,9 +25,9 @@ resource "aws_lambda_function" "reservar_asientos" {
   kms_key_arn = aws_kms_key.logs_cmk.arn
   environment {
     variables = {
-      DB_HOST= aws_db_proxy.cinemahub.endpoint
-      DB_PORT = tostring(var.db_port)
-      DB_NAME  = var.db_name
+      DB_HOST       = aws_db_proxy.cinemahub.endpoint
+      DB_PORT       = tostring(var.db_port)
+      DB_NAME       = var.db_name
       DB_SECRET_ARN = aws_db_instance.cinemahub.master_user_secret[0].secret_arn
     }
   }

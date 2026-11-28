@@ -68,6 +68,7 @@
       "Action": [
         "lambda:GetFunction",
         "lambda:GetFunctionConfiguration",
+        "lambda:GetFunctionCodeSigningConfig",
         "lambda:GetPolicy",
         "lambda:ListTags",
         "lambda:ListVersionsByFunction"
@@ -79,6 +80,35 @@
       "Effect": "Allow",
       "Action": "apigateway:GET",
       "Resource": "arn:aws:apigateway:us-east-2::/apis*"
+    },
+    {
+      "Sid": "TerraformRoute53HostedZoneList",
+      "Effect": "Allow",
+      "Action": "route53:ListHostedZones",
+      "Resource": "*"
+    },
+    {
+      "Sid": "TerraformRoute53HostedZoneRead",
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetHostedZone",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z05624012OOAP4H2RG9Y7"
+    },
+    {
+      "Sid": "TerraformAcmCertificateRead",
+      "Effect": "Allow",
+      "Action": [
+        "acm:DescribeCertificate",
+        "acm:ListTagsForCertificate"
+      ],
+      "Resource": "arn:aws:acm:us-east-1:829999272931:certificate/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
     },
     {
       "Sid": "TerraformLambdaExecutionRoleRead",
@@ -111,12 +141,165 @@
       "Action": [
         "logs:ListTagsForResource"
       ],
-      "Resource": "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access:*",
+      "Resource": [
+        "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access",
+        "arn:aws:logs:us-east-2:829999272931:log-group:/aws/apigateway/cinemahub-dev-http-api-access:*"
+      ],
       "Condition": {
         "StringEquals": {
           "aws:RequestedRegion": "us-east-2"
         }
       }
+    },
+    {
+      "Sid": "TerraformProjectIamRoleRead",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListRoleTags"
+      ],
+      "Resource": "arn:aws:iam::829999272931:role/cinemahub-dev-*"
+    },
+    {
+      "Sid": "TerraformBackupRead",
+      "Effect": "Allow",
+      "Action": [
+        "backup:GetBackupPlan",
+        "backup:DescribeBackupVault",
+        "backup:ListTags",
+        "backup:GetBackupSelection",
+        "backup:ListBackupPlans",
+        "backup:ListBackupSelections"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformElastiCacheSubnetRead",
+      "Effect": "Allow",
+      "Action": [
+        "elasticache:DescribeCacheSubnetGroups",
+        "elasticache:DescribeReplicationGroups",
+        "elasticache:DescribeCacheClusters",
+        "elasticache:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:elasticache:us-east-2:829999272931:subnetgroup:cinemahub-dev-*",
+        "arn:aws:elasticache:us-east-2:829999272931:replicationgroup:cinemahub-dev-*",
+        "arn:aws:elasticache:us-east-2:829999272931:cluster:cinemahub-dev-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformCloudFrontRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:GetOriginAccessControl",
+        "cloudfront:DescribeFunction",
+        "cloudfront:GetFunction",
+        "cloudfront:ListTagsForResource",
+        "cloudfront:GetDistribution"
+      ],
+      "Resource": [
+        "arn:aws:cloudfront::829999272931:origin-access-control/*",
+        "arn:aws:cloudfront::829999272931:distribution/*",
+        "arn:aws:cloudfront::829999272931:function/cinemahub-dev-*"
+      ]
+    },
+    {
+      "Sid": "TerraformFrontendBucketSettingsRead",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketPublicAccessBlock",
+        "s3:GetBucketOwnershipControls",
+        "s3:GetBucketVersioning",
+        "s3:GetEncryptionConfiguration",
+        "s3:GetBucketPolicy"
+      ],
+      "Resource": "arn:aws:s3:::cinemahub-dev-frontend-829999272931"
+    },
+    {
+      "Sid": "TerraformWAFRead",
+      "Effect": "Allow",
+      "Action": [
+        "wafv2:GetWebACL",
+        "wafv2:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:wafv2:us-east-1:829999272931:global/webacl/cinemahub-dev-*/*"
+    },
+    {
+      "Sid": "TerraformKMSRead",
+      "Effect": "Allow",
+      "Action": [
+        "kms:DescribeKey",
+        "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
+        "kms:ListResourceTags"
+      ],
+      "Resource": "arn:aws:kms:us-east-2:829999272931:key/*"
+    },
+    {
+      "Sid": "TerraformKMSAliasRead",
+      "Effect": "Allow",
+      "Action": "kms:ListAliases",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformSQSQueueRead",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:ListQueueTags"
+      ],
+      "Resource": "arn:aws:sqs:us-east-2:829999272931:cinemahub-dev-*"
+    },
+    {
+      "Sid": "TerraformVpcFlowLogGroupTagsRead",
+      "Effect": "Allow",
+      "Action": "logs:ListTagsForResource",
+      "Resource": "arn:aws:logs:us-east-2:829999272931:log-group:/aws/vpc/cinemahub-dev-flow-logs",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-2"
+        }
+      }
+    },
+    {
+      "Sid": "TerraformLambdaCodeSigningConfigRead",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetCodeSigningConfig",
+        "lambda:ListTags"
+      ],
+      "Resource": "arn:aws:lambda:us-east-2:829999272931:code-signing-config:*"
+    },
+    {
+      "Sid": "TerraformSignerProfileRead",
+      "Effect": "Allow",
+      "Action": "signer:GetSigningProfile",
+      "Resource": "arn:aws:signer:us-east-2:829999272931:/signing-profiles/terraform_*"
+    },
+    {
+      "Sid": "TerraformRoute53HostedZoneTagsRead",
+      "Effect": "Allow",
+      "Action": "route53:ListTagsForResource",
+      "Resource": "arn:aws:route53:::hostedzone/Z05624012OOAP4H2RG9Y7"
     }
   ]
 }

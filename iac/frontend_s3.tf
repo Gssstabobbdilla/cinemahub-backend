@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${var.project_name}-${local.env}-frontend-${data.aws_caller_identity.current.account_id}"
+  bucket        = "${var.project_name}-${local.env}-frontend-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 
   tags = merge(local.common_tags, {
@@ -8,10 +8,10 @@ resource "aws_s3_bucket" "frontend" {
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
-  block_public_acls = true
-  block_public_policy  = true
-  ignore_public_acls = true
+  bucket                  = aws_s3_bucket.frontend.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -43,5 +43,5 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "frontend" {
 
 output "frontend_bucket_name" {
   description = "Bucket privado para los archivos del frontend Angular"
-  value = aws_s3_bucket.frontend.bucket
+  value       = aws_s3_bucket.frontend.bucket
 }
